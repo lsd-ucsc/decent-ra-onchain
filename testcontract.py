@@ -5,6 +5,7 @@ import sha3
 import sys
 
 from asn1crypto import pem, x509
+from asn1crypto import keys
 from hashlib import sha256
 from random import randint
 from web3 import Web3, HTTPProvider
@@ -54,6 +55,7 @@ def verify_root_cert(contract):
     # load root certificate
     cert = load_cert('certs/rootCert.pem')
     cert_bytes = cert.dump()
+    print(cert_bytes.hex())
 
     # add certificate and get transaction receipt
     tx_hash = contract.functions.addRootCert(cert_bytes).transact()
@@ -61,6 +63,8 @@ def verify_root_cert(contract):
     print("Receipt for root certificate:")
     print(tx_receipt)
     print("--------------------")
+
+
 
 
 
@@ -82,6 +86,7 @@ def verify_report_cert(contract):
     print(output)
 
 
+
 def verify_decent_contract(contract):
     # decent_cert = load_cert('certs/decentServerCert.pem')
     decent_cert = load_cert('certs/decentServerCert.pem')
@@ -94,9 +99,26 @@ def verify_decent_contract(contract):
     print(tx_receipt)
     print("--------------------\n\n")
 
+def extract_parameters():
+    cert = load_cert('certs/rootCert.pem')
+    cert_bytes = cert.dump()
+    public_key = cert['tbs_certificate']['subject_public_key_info']
+    print(public_key.dump().hex())
+
+
+    # extracing key components
+    # exponent = public_key['public_key']['public_exponent']
+    # print("exponent: ", hex(exponent))
+
+    # msg = cert['tbs_certificate'].dump()
+    # msh_hash = sha256(msg).hexdigest()
+    # print("msg: ", msh_hash)
+
+    # signature = cert['signature_value'].native
+    # print("signature: ", signature.hex())
+
 
 if __name__ == '__main__':
-
     # check if contract address was provided
     if len(sys.argv) < 2:
         print("Usage: python3 testcontract.py <X509 Parse Contract Address>")
@@ -107,3 +129,6 @@ if __name__ == '__main__':
     contract = load_contract()
     verify_root_cert(contract)
     verify_decent_contract(contract)
+    # extract_parameters()
+
+

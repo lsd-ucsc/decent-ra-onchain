@@ -4,7 +4,6 @@ pragma solidity >0.5.2;
 import "./Algorithm.sol";
 import "./Asn1Decode.sol";
 import "./Base64.sol";
-import "./DateTime.sol";
 import "./RLPReader.sol";
 
 /*
@@ -16,9 +15,6 @@ contract X509Parse {
     // using types defined in the imported libraries
     using Asn1Decode for bytes;
     using RLPReader for RLPReader.RLPItem;
-
-    // variables for imported contracts
-    DateTime dateTime;
 
     // DER certificate
     struct Certificate {
@@ -76,14 +72,14 @@ contract X509Parse {
     mapping(bytes32 => Algorithm) private algs;
 
 
+
     /**************************************************************************
      *  Constructor
      *************************************************************************/
 
-    constructor(address sha256WithRSAEncryption, address _dateTime) {
+    constructor(address sha256WithRSAEncryption) {
         bytes32 algOid = 0x2a864886f70d01010b0000000000000000000000000000000000000000000000;
         algs[algOid] = Algorithm(sha256WithRSAEncryption);
-        dateTime = DateTime(_dateTime);
 
         // initialize enclave quote status map
         quoteStatusMap['OK'] = true;
@@ -306,6 +302,7 @@ contract X509Parse {
         pubkeyNode = getPubkeyNode(cert);
         rootCert.pubKey = cert.allBytesAt(pubkeyNode);
 
+
         // Verify signature
         require(
             algs[algType].verify(
@@ -316,6 +313,7 @@ contract X509Parse {
             "Signature doesnt match"
         );
     } // end of addRootCert
+
 
     /**
      * Add the intermediate certificate signed by root cert
