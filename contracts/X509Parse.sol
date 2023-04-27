@@ -1,10 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >0.5.2;
 
-import "./Algorithm.sol";
-import "./Asn1Decode.sol";
-import "./Base64.sol";
-import "./RLPReader.sol";
+
+import {Asn1Decode, NodePtr} from "./asn1-decode/Asn1Decode.sol";
+import {Base64} from "./Base64.sol";
+import {RLPReader} from "./RLPReader.sol";
+
+
+interface CryptoAlgorithm {
+    function verifySign(
+        bytes memory key,
+        bytes memory data,
+        bytes memory sig
+    )
+        external
+        view
+        returns (bool);
+}
+
 
 /*
  * @dev Stores validated X.509 certificate chains in parent pointer trees.
@@ -65,11 +78,13 @@ contract X509Parse {
     bytes32 constant private OID_PLATFORM_ID  = 0x6982f5c89a94ffdfaaab8591c1b5f7c2f782b01e020000000000000000000000;
     bytes32 constant private OID_STD_REP_DATA = 0x6982f5c89a94ffdfaaab8591c1b5f7c2f782b01e030101000000000000000000;
 
+    bytes32 constant private OID_ALG_RSA_SHA_256 = 0x2a864886f70d01010b0000000000000000000000000000000000000000000000;
+
     // valid statuses for enclave quote
-    mapping (bytes => bool) public quoteStatusMap;
+    mapping(bytes => bool) private quoteStatusMap;
 
     // algorithm oid bytes => signature verification contract
-    mapping(bytes32 => Algorithm) private algs;
+    mapping(bytes32 => CryptoAlgorithm) private algs;
 
 
 
@@ -77,9 +92,11 @@ contract X509Parse {
      *  Constructor
      *************************************************************************/
 
-    constructor(address sha256WithRSAEncryption) {
-        bytes32 algOid = 0x2a864886f70d01010b0000000000000000000000000000000000000000000000;
-        algs[algOid] = Algorithm(sha256WithRSAEncryption);
+    constructor(
+        address RsaSha256AlgAddr
+    )
+    {
+        algs[OID_ALG_RSA_SHA_256] = CryptoAlgorithm(RsaSha256AlgAddr);
 
         // initialize enclave quote status map
         quoteStatusMap['OK'] = true;
@@ -305,7 +322,7 @@ contract X509Parse {
 
         // Verify signature
         require(
-            algs[algType].verify(
+            algs[algType].verifySign(
                 rootCert.pubKey,
                 cert.allBytesAt(node1),
                 cert.bytesAt(sigNode)
@@ -346,7 +363,7 @@ contract X509Parse {
 
         // Verify signature
         require(
-            algs[reportCert.algType].verify(
+            algs[reportCert.algType].verifySign(
                 rootCert.pubKey,
                 cert.allBytesAt(node1),
                 cert.bytesAt(sigNode)
@@ -438,7 +455,7 @@ contract X509Parse {
 
                     // Verify signature over JSON dict
                     require(
-                        algs[reportCert.algType].verify(
+                        algs[reportCert.algType].verifySign(
                             reportCert.pubKey,
                             jsonDict,
                             list[2].toBytes() // signature

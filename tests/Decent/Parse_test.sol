@@ -1,18 +1,24 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.17 <0.9.0;
 
-pragma solidity >=0.7.0 <0.9.0;
+// This import is automatically injected by Remix
+import "remix_tests.sol";
 
-import "remix_tests.sol"; // this import is automatically injected by Remix.
+// This import is required to use custom transaction context
+// Although it may fail compilation in 'Solidity Compiler' plugin
+// But it will work fine in 'Solidity Unit Testing' plugin
+import "remix_accounts.sol";
 
-import "../contracts/Algorithm.sol";
-import "../contracts/RLPReader.sol";
-import "../contracts/X509Parse.sol";
+
+import {X509Parse} from "../../contracts/X509Parse.sol";
+import {RSA} from "../../contracts/RSA.sol";
+
 
 contract ParseTest {
 	address RSAContractAddr;
 
     function beforeAll () public {
-        RSASHA256Algorithm rsaInstance = new RSASHA256Algorithm();
+        RSA rsaInstance = new RSA();
         RSAContractAddr = address(rsaInstance);
     }
 

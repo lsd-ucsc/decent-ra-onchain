@@ -1,10 +1,17 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.17 <0.9.0;
 
-pragma solidity >=0.7.0 <0.9.0;
+// This import is automatically injected by Remix
+import "remix_tests.sol";
 
-import "remix_tests.sol"; // this import is automatically injected by Remix.
+// This import is required to use custom transaction context
+// Although it may fail compilation in 'Solidity Compiler' plugin
+// But it will work fine in 'Solidity Unit Testing' plugin
+import "remix_accounts.sol";
 
-import "../contracts/RLPReader.sol";
+
+import {RLPReader} from "../../contracts/RLPReader.sol";
+
 
 contract RLPTest {
     using RLPReader for RLPReader.RLPItem;
@@ -14,10 +21,10 @@ contract RLPTest {
 
     function rlpTest() external {
         uint i = 1337;
-		bytes memory rlpBytes = abi.encodePacked(i);
-		RLPReader.RLPItem memory item = RLPReader.toRlpItem(rlpBytes);
+        bytes memory rlpBytes = abi.encodePacked(i);
+        RLPReader.RLPItem memory item = RLPReader.toRlpItem(rlpBytes);
         uint val = RLPReader.toUint(item);
 
-		Assert.equal(val, uint(1337), "rlp value not equal");
-	}
+        Assert.equal(val, uint(1337), "rlp value not equal");
+    }
 }

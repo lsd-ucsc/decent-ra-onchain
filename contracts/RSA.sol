@@ -2,7 +2,6 @@ pragma solidity >=0.8.0 <0.9.0;
 
 
 import "./asn1-decode/Asn1Decode.sol";
-import "./Algorithm.sol";
 import "./RSAVerify.sol";
 
 import {BytesUtils} from "./ens-contracts/BytesUtils.sol";
@@ -12,7 +11,6 @@ contract RSA {
 
     using BytesUtils for bytes;
     using Asn1Decode for bytes;
-    //using NodePtr for uint;
 
     function verifyWithComponents(
         bytes memory modulus,
@@ -63,8 +61,12 @@ contract RSA {
         return (modulus, exponent);
     }
 
-    function verify(bytes memory key, bytes memory data, bytes memory sig)
-        public
+    function verifySign(
+        bytes memory key,
+        bytes memory data,
+        bytes memory sig
+    )
+        external
         view
         returns (bool)
     {
