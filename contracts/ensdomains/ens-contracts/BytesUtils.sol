@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity >=0.8.4;
 
 library BytesUtils {
     error OffsetOutOfBoundsError(uint256 offset, uint256 length);

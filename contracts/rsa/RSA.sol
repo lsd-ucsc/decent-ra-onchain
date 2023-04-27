@@ -1,10 +1,10 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 
-import "./asn1-decode/Asn1Decode.sol";
-import "./RSAVerify.sol";
+import "../asn1-decode/Asn1Decode.sol";
+import "../ensdomains/ens-contracts/RSAVerify.sol";
 
-import {BytesUtils} from "./ens-contracts/BytesUtils.sol";
+import {BytesUtils} from "../ensdomains/ens-contracts/BytesUtils.sol";
 
 
 contract RSA {

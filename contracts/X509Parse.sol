@@ -3,8 +3,8 @@ pragma solidity >0.5.2;
 
 
 import {Asn1Decode, NodePtr} from "./asn1-decode/Asn1Decode.sol";
-import {Base64} from "./Base64.sol";
-import {RLPReader} from "./RLPReader.sol";
+import {Base64} from "./base64/Base64.sol";
+import {RLPReader} from "./rlp/RLPReader.sol";
 
 
 interface CryptoAlgorithm {

@@ -53,7 +53,7 @@ def load_cert(cert_file):
 
 def verify_root_cert(contract):
     # load root certificate
-    cert = load_cert('certs/rootCert.pem')
+    cert = load_cert('tests/certs/rootCert.pem')
     cert_bytes = cert.dump()
     print(cert_bytes.hex())
 
@@ -70,7 +70,7 @@ def verify_root_cert(contract):
 
 def verify_report_cert(contract):
     # load intermediate certificate
-    cert = load_cert('certs/reportCert.pem')
+    cert = load_cert('tests/certs/reportCert.pem')
     cert_bytes = cert.dump()
 
     # add certificate and get transaction receipt
@@ -89,7 +89,7 @@ def verify_report_cert(contract):
 
 def verify_decent_contract(contract):
     # decent_cert = load_cert('certs/decentServerCert.pem')
-    decent_cert = load_cert('certs/decentServerCert.pem')
+    decent_cert = load_cert('tests/certs/decentServerCert.pem')
     cert_bytes = decent_cert.dump()
 
     # add certificate and get transaction receipt
