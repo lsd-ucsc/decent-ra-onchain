@@ -19,7 +19,7 @@ library RSAVerify {
     )
         internal
         view
-        returns (bool, bytes memory)
+        returns (bytes memory)
     {
         return ModexpPrecompile.modexp(S, E, N);
     }

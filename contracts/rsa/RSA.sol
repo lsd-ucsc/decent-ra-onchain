@@ -22,12 +22,9 @@ contract RSA {
         view
         returns (bool)
     {
-        bool ok;
-        bytes memory result;
+        bytes memory expHash = RSAVerify.rsarecover(modulus, exponent, sig);
 
-        (ok, result) = RSAVerify.rsarecover(modulus, exponent, sig);
-
-        return ok && hash == result.readBytes32(result.length - 32);
+        return hash == expHash.readBytes32(expHash.length - 32);
     }
 
     /**
