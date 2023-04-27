@@ -11,7 +11,7 @@ import "remix_accounts.sol";
 
 
 import {X509Parse} from "../../contracts/X509Parse.sol";
-import {RSA} from "../../contracts/RSA.sol";
+import {RSA} from "../../contracts/rsa/RSA.sol";
 
 
 contract ParseTest {

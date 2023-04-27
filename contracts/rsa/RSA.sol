@@ -1,10 +1,9 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 
-import "../asn1-decode/Asn1Decode.sol";
-import "../ensdomains/ens-contracts/RSAVerify.sol";
-
-import {BytesUtils} from "../ensdomains/ens-contracts/BytesUtils.sol";
+import {Asn1Decode} from "../asn1-decode/Asn1Decode.sol";
+import {RSAVerify} from "../ens-contracts/RSAVerify.sol";
+import {BytesUtils} from "../ens-contracts/BytesUtils.sol";
 
 
 contract RSA {
@@ -23,7 +22,7 @@ contract RSA {
         returns (bool)
     {
         bytes memory expHash = RSAVerify.rsarecover(modulus, exponent, sig);
-
+        require(expHash.length >= 32, "Invalid signature");
         return hash == expHash.readBytes32(expHash.length - 32);
     }
 

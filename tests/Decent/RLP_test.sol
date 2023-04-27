@@ -10,7 +10,7 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 
 
-import {RLPReader} from "../../contracts/RLPReader.sol";
+import {RLPReader} from "../../contracts/rlp/RLPReader.sol";
 
 
 contract RLPTest {

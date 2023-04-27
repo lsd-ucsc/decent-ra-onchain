@@ -9,7 +9,7 @@ import "remix_tests.sol";
 // But it will work fine in 'Solidity Unit Testing' plugin
 import "remix_accounts.sol";
 
-import "../../contracts/RSA.sol";
+import "../../contracts/rsa/RSA.sol";
 
 
 contract RSATest {
