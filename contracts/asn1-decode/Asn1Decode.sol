@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: MIT
+pragma solidity >=0.5.2 <0.9.0;
 
-/*
- * @author JonahGroendal
- * https://github.com/JonahGroendal/asn1-decode/blob/master/contracts/Asn1Decode.sol
- */
-pragma solidity  >0.5.2;
-
-import "./BytesUtils.sol";
+import {BytesUtils} from "../ens-contracts/BytesUtils.sol";
 
 library NodePtr {
   // Unpack first byte index
@@ -29,9 +24,28 @@ library NodePtr {
   }
 }
 
+
+library substringProxy {
+  using BytesUtils for bytes;
+
+  function substring(
+    bytes memory self,
+    uint offset,
+    uint len
+  )
+    internal
+    pure
+    returns(bytes memory)
+  {
+    return self.substringUnsafe(offset, len);
+  }
+}
+
+
 library Asn1Decode {
   using NodePtr for uint;
   using BytesUtils for bytes;
+  using substringProxy for bytes;
 
   /*
    * @dev Get the root node. First step in traversing an ASN1 structure
@@ -39,7 +53,7 @@ library Asn1Decode {
    * @return A pointer to the outermost node
    */
   function root(bytes memory der) internal pure returns (uint) {
-  	return readNodeLength(der, 0);
+    return readNodeLength(der, 0);
   }
 
   /*
@@ -69,7 +83,7 @@ library Asn1Decode {
    * @return A pointer to the next sibling node
    */
   function nextSiblingOf(bytes memory der, uint ptr) internal pure returns (uint) {
-  	return readNodeLength(der, ptr.ixl()+1);
+    return readNodeLength(der, ptr.ixl()+1);
   }
 
   /*
@@ -79,8 +93,8 @@ library Asn1Decode {
    * @return A pointer to the first child node
    */
   function firstChildOf(bytes memory der, uint ptr) internal pure returns (uint) {
-  	require(der[ptr.ixs()] & 0x20 == 0x20, "Not a constructed type");
-  	return readNodeLength(der, ptr.ixf());
+    require(der[ptr.ixs()] & 0x20 == 0x20, "Not a constructed type");
+    return readNodeLength(der, ptr.ixf());
   }
 
   /*
@@ -90,7 +104,7 @@ library Asn1Decode {
    * @return True iff j is child of i or i is child of j.
    */
   function isChildOf(uint i, uint j) internal pure returns (bool) {
-  	return ( ((i.ixf() <= j.ixs()) && (j.ixl() <= i.ixl())) ||
+    return ( ((i.ixf() <= j.ixs()) && (j.ixl() <= i.ixl())) ||
              ((j.ixf() <= i.ixs()) && (i.ixl() <= j.ixl())) );
   }
 
@@ -164,9 +178,13 @@ library Asn1Decode {
     require(der[ptr.ixf()] & 0x80 == 0, "Not positive");
     uint valueLength = ptr.ixl()+1 - ptr.ixf();
     if (der[ptr.ixf()] == 0)
+    {
       return der.substring(ptr.ixf()+1, valueLength-1);
+    }
     else
+    {
       return der.substring(ptr.ixf(), valueLength);
+    }
   }
 
   function keccakOfBytesAt(bytes memory der, uint ptr) internal pure returns (bytes32) {
@@ -195,10 +213,10 @@ library Asn1Decode {
     uint length;
     uint80 ixFirstContentByte;
     uint80 ixLastContentByte;
-  	if ((der[ix+1] & 0x80) == 0) {
-  		length = uint8(der[ix+1]);
-  		ixFirstContentByte = uint80(ix+2);
-  		ixLastContentByte = uint80(ixFirstContentByte + length -1);
+    if ((der[ix+1] & 0x80) == 0) {
+      length = uint8(der[ix+1]);
+      ixFirstContentByte = uint80(ix+2);
+      ixLastContentByte = uint80(ixFirstContentByte + length -1);
     } else {
       uint8 lengthbytesLength = uint8(der[ix+1] & 0x7F);
       if (lengthbytesLength == 1)
@@ -207,8 +225,8 @@ library Asn1Decode {
         length = der.readUint16(ix+2);
       else
         length = uint(der.readBytesN(ix+2, lengthbytesLength) >> (32-lengthbytesLength)*8);
-  		ixFirstContentByte = uint80(ix+2+lengthbytesLength);
-  		ixLastContentByte = uint80(ixFirstContentByte + length -1);
+      ixFirstContentByte = uint80(ix+2+lengthbytesLength);
+      ixLastContentByte = uint80(ixFirstContentByte + length -1);
     }
     return NodePtr.getPtr(ix, ixFirstContentByte, ixLastContentByte);
   }

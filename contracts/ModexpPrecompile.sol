@@ -8,7 +8,15 @@ library ModexpPrecompile {
     /**
     * @dev Computes (base ^ exponent) % modulus over big numbers.
     */
-    function modexp(bytes memory base, bytes memory exponent, bytes memory modulus) internal view returns (bool success, bytes memory output) {
+    function modexp(
+        bytes memory base,
+        bytes memory exponent,
+        bytes memory modulus
+    )
+        internal
+        view
+        returns (bool success, bytes memory output)
+    {
         uint size = (32 * 3) + base.length + exponent.length + modulus.length;
 
         Buffer.buffer memory input;
