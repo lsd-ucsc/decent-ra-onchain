@@ -100,10 +100,26 @@ def verify_decent_contract(contract):
     print("--------------------\n\n")
 
 def extract_parameters():
-    cert = load_cert('certs/rootCert.pem')
-    cert_bytes = cert.dump()
-    public_key = cert['tbs_certificate']['subject_public_key_info']
-    print(public_key.dump().hex())
+    # root_cert = load_cert('tests/certs/rootCert.pem')
+    # root_cert_bytes = root_cert.dump()
+    # print("----------------------------------------------------")
+    # print("root cert bytes:")
+    # print(root_cert_bytes.hex())
+
+    # report_cert = load_cert('tests/certs/reportCert.pem')
+    # report_cert_bytes = report_cert.dump()
+    # print("----------------------------------------------------")
+    # print("report cert bytes:")
+    # print(report_cert_bytes.hex())
+
+    # decent_cert = load_cert('tests/certs/decentServerCert.pem')
+    # decent_cert_bytes = decent_cert.dump()
+    # print("----------------------------------------------------")
+    # print("decent cert bytes:")
+    # print(decent_cert_bytes.hex())
+
+    # public_key = cert['tbs_certificate']['subject_public_key_info']
+    # print(public_key.dump().hex())
 
 
     # extracing key components
@@ -130,5 +146,3 @@ if __name__ == '__main__':
     verify_root_cert(contract)
     verify_decent_contract(contract)
     # extract_parameters()
-
-
