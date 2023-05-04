@@ -2,3 +2,7 @@
 	path = libs/DateTimeLibrary
 	url = https://github.com/bokkypoobah/BokkyPooBahsDateTimeLibrary.git
 	branch = master
+[submodule "utils/PyEthHelper"]
+	path = utils/PyEthHelper
+	url = https://github.com/lsd-ucsc/PyEthHelper.git
+	branch = main

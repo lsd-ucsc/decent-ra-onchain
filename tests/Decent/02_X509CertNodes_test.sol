@@ -14,6 +14,7 @@ import {Asn1Decode, NodePtr} from "../../contracts/asn1-decode/Asn1Decode.sol";
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
 import {OIDs} from "../../contracts/OIDs.sol";
 import {TestCerts} from "../TestCerts.sol";
+import {X509CertNodes_utils} from "./02_X509CertNodes.sol";
 
 
 contract X509CertNodes_testSuit {
@@ -151,5 +152,37 @@ contract X509CertNodes_testSuit {
             certNodes.tbs.getValidityTimestamps(certDer);
         Assert.equal(notBefore, 1479137851, "notBefore not match");
         Assert.equal(notAfter,  2524607999, "notAfter not match");
+    }
+
+    function gasEval() public {
+        X509CertNodes_utils u = new X509CertNodes_utils();
+
+        bytes memory certDer = TestCerts.IAS_ROOT_CERT_DER;
+        uint256 gasUsed;
+        uint256 retVal;
+
+        X509CertNodes.CertNodesObj memory certNodes1;
+        gasUsed = gasleft();
+        certNodes1.loadCertNodes(TestCerts.IAS_ROOT_CERT_DER);
+        gasUsed -= gasleft();
+        // Assert.equal(gasUsed, 14118, "gasUsed");
+
+        X509CertNodes.CertNodesObj memory certNodes2;
+        gasUsed = gasleft();
+        certNodes2.loadCertNodes(certDer);
+        gasUsed -= gasleft();
+        // Assert.equal(gasUsed, 13792, "gasUsed");
+
+        gasUsed = gasleft();
+        retVal = u.certNodesMem(certNodes1);
+        gasUsed -= gasleft();
+        Assert.equal(retVal, 1, "retVal!=1");
+        //Assert.equal(gasUsed, 1642, "gasUsed");
+
+        gasUsed = gasleft();
+        retVal = u.certNodesCall(certNodes1);
+        gasUsed -= gasleft();
+        Assert.equal(retVal, 1, "retVal!=1");
+        // Assert.equal(gasUsed, 1190, "gasUsed");
     }
 }

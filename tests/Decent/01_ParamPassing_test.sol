@@ -16,9 +16,13 @@ import {LibParamPassing, ContraParamPassing} from "./01_ParamPassing.sol";
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts
 contract ParamPassing_testSuite {
 
+    bytes private m_b;
+
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeAll() public {
+        m_b = new bytes(4096);
+        m_b[0] = 0x01;
     }
 
     /**
@@ -34,6 +38,10 @@ contract ParamPassing_testSuite {
 
     function libGasDiff() public {
         bytes memory b = new bytes(4096);
+        b[0] = 0x01;
+
+        // library
+
         uint256 internMemGasUsed = gasleft();
         uint256 retVal = LibParamPassing.internMemFunc(b);
         internMemGasUsed -= gasleft();
@@ -49,9 +57,44 @@ contract ParamPassing_testSuite {
         externCallGasUsed -= gasleft();
         Assert.equal(retVal, 3, "retVal must be 3");
 
-        Assert.lesserThan(internMemGasUsed, uint256(100), "internMemGasUsed");
-        Assert.greaterThan(externMemGasUsed, uint256(1000), "externMemGasUsed");
-        Assert.greaterThan(externCallGasUsed, uint256(1000), "externCallGasUsed");
+        Assert.lesserThan(internMemGasUsed, uint256(500), "internMemGasUsed");
+        // Assert.equal(internMemGasUsed, 152, "internMemGasUsed");
+        Assert.greaterThan(externMemGasUsed, uint256(5000), "externMemGasUsed");
+        // Assert.equal(externMemGasUsed, 15145, "externMemGasUsed");
+        Assert.greaterThan(externCallGasUsed, uint256(5000), "externCallGasUsed");
+        // Assert.equal(externCallGasUsed, 11264, "externCallGasUsed");
+
+        // contract
+        ContraParamPassing c = new ContraParamPassing();
+
+        externMemGasUsed = gasleft();
+        retVal = c.externMemFunc(b);
+        externMemGasUsed -= gasleft();
+        Assert.equal(retVal, 3, "retVal must be 3");
+
+        externCallGasUsed = gasleft();
+        retVal = c.externCallFunc(b);
+        externCallGasUsed -= gasleft();
+        Assert.equal(retVal, 3, "retVal must be 3");
+
+        uint256 pubCallGasUsed = gasleft();
+        retVal = c.pubCallFunc(b);
+        pubCallGasUsed -= gasleft();
+        Assert.equal(retVal, 3, "retVal must be 3");
+
+        Assert.greaterThan(externMemGasUsed, uint256(5000), "externMemGasUsed");
+        // Assert.equal(externMemGasUsed, 12207, "externMemGasUsed");
+        Assert.greaterThan(externCallGasUsed, uint256(5000), "externCallGasUsed");
+        // Assert.equal(externCallGasUsed, 11298, "externCallGasUsed");
+        Assert.greaterThan(pubCallGasUsed, uint256(5000), "pubCallGasUsed");
+        // Assert.equal(pubCallGasUsed, 11277, "pubCallGasUsed");
+
+        pubCallGasUsed = gasleft();
+        retVal = c.pubCallFunc(m_b);
+        pubCallGasUsed -= gasleft();
+        Assert.equal(retVal, 3, "retVal must be 3");
+        Assert.greaterThan(pubCallGasUsed, uint256(50000), "pubCallGasUsed");
+        // Assert.equal(pubCallGasUsed, 281951, "pubCallGasUsed");
     }
 
     /**

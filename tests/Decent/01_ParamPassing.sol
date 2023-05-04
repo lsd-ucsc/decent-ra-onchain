@@ -33,17 +33,17 @@ library LibParamPassing {
     }
 
     function internMemFunc(bytes memory b) internal pure returns (uint256) {
-        b;
+        require(b[0] == 0x01, "b[0]!=1");
         return 3;
     }
 
     function externMemFunc(bytes memory b) external pure returns (uint256) {
-        b;
+        require(b[0] == 0x01, "b[0]!=1");
         return 3;
     }
 
     function externCallFunc(bytes calldata b) external pure returns (uint256) {
-        b;
+        require(b[0] == 0x01, "b[0]!=1");
         return 3;
     }
 }
@@ -87,4 +87,20 @@ contract ContraParamPassing {
     //     s.b = 2;
     //     return 3;
     // }
+
+    function externMemFunc(bytes memory b) external pure returns (uint256) {
+        require(b[0] == 0x01, "b[0]!=1");
+        return 3;
+    }
+
+    function externCallFunc(bytes calldata b) external pure returns (uint256) {
+        require(b[0] == 0x01, "b[0]!=1");
+        return 3;
+    }
+
+    function pubCallFunc(bytes calldata b) public pure returns (uint256) {
+        require(b[0] == 0x01, "b[0]!=1");
+        return 3;
+    }
+
 }
