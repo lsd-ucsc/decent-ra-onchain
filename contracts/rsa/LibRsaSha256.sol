@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
 
@@ -6,7 +7,7 @@ import {RSAVerify} from "../ens-contracts/RSAVerify.sol";
 import {BytesUtils} from "../ens-contracts/BytesUtils.sol";
 
 
-contract RSA {
+library LibRsaSha256 {
 
     using BytesUtils for bytes;
     using Asn1Decode for bytes;
@@ -17,7 +18,7 @@ contract RSA {
         bytes32 hash,
         bytes memory sig
     )
-        public
+        internal
         view
         returns (bool)
     {
@@ -31,14 +32,12 @@ contract RSA {
     * @param key A DER-encoded RSA public key
     */
     function extractKeyComponents(bytes memory key)
-        public
+        internal
         pure
-        returns (bytes memory, bytes memory)
+        returns (bytes memory modulus, bytes memory exponent)
     {
         uint node;
         bytes32 oid;
-        bytes memory modulus;
-        bytes memory exponent;
 
         node = key.root();
         node = key.firstChildOf(node);
@@ -53,16 +52,14 @@ contract RSA {
         modulus = key.uintBytesAt(node);
         node = key.nextSiblingOf(node);
         exponent = key.uintBytesAt(node);
-
-        return (modulus, exponent);
     }
 
-    function verifySign(
+    function verifySignMsg(
         bytes memory key,
-        bytes memory data,
+        bytes memory message,
         bytes memory sig
     )
-        external
+        internal
         view
         returns (bool)
     {
@@ -71,7 +68,7 @@ contract RSA {
 
         (m, e) = extractKeyComponents(key);
 
-        return verifyWithComponents(m, e, sha256(data), sig);
+        return verifyWithComponents(m, e, sha256(message), sig);
     }
 
 }

@@ -302,7 +302,7 @@ library BytesUtils {
         bytes memory self,
         uint256 offset,
         uint256 len
-    ) external pure returns (bytes memory) {
+    ) internal pure returns (bytes memory) {
         require(offset + len <= self.length);
 
         bytes memory ret = new bytes(len);
@@ -340,7 +340,7 @@ library BytesUtils {
         bytes memory self,
         uint offset,
         uint len
-    ) external pure returns(bytes memory) {
+    ) internal pure returns(bytes memory) {
         require(offset + len <= self.length, "Invalid length");
 
         bytes memory ret = new bytes(len);
@@ -362,6 +362,32 @@ library BytesUtils {
         return ret;
     }
 
+    function substrstringFast(
+        bytes memory self,
+        uint offset,
+        uint len
+    ) internal pure returns(string memory) {
+        require(offset + len <= self.length, "Invalid length");
+
+        string memory ret = new string(len);
+        uint dest;
+        uint src;
+        uint alignedLen = (len / 32) * 32;
+
+        assembly {
+            dest := add(ret, 32)
+            src := add(add(self, 32), offset)
+        }
+        memcpySafe(dest, src, alignedLen);
+
+        // copy last unaligned bytes
+        for (uint i = 0; i < len - alignedLen; i++) {
+            bytes(ret)[alignedLen + i] = self[offset + alignedLen + i];
+        }
+
+        return ret;
+    }
+
     /*
     * @dev Copies a substring into a new byte string.
     * @param self The byte string to copy from.
@@ -372,7 +398,7 @@ library BytesUtils {
         bytes memory self,
         uint offset,
         uint len
-    ) external pure returns(bytes memory) {
+    ) internal pure returns(bytes memory) {
         require(offset + len <= self.length, "Invalid length");
 
         bytes memory ret = new bytes(len);

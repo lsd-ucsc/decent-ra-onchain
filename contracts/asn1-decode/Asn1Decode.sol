@@ -118,6 +118,10 @@ library Asn1Decode {
     return der.substring(ptr.ixf(), ptr.ixl()+1 - ptr.ixf());
   }
 
+  function stringAt(bytes memory der, uint ptr) internal pure returns (string memory) {
+    return der.substrstringFast(ptr.ixf(), ptr.ixl()+1 - ptr.ixf());
+  }
+
   /*
    * @dev Extract value representing the raw public key bytes from DER-encoded structure
    * @param der The der-encoded ASN1 structure
