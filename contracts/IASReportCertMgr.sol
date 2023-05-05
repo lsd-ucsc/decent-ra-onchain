@@ -39,7 +39,7 @@ contract IASReportCertMgr {
         bytes memory certDer
     ) public {
         // ensure that the root CA cert is not expired
-        //Interface_IASRootCertMgr(m_rootCertMgrAddr).requireValidity();
+        Interface_IASRootCertMgr(m_rootCertMgrAddr).requireValidity();
 
         // gets root CA public key
         (bytes memory rootPubKeyMod, bytes memory rootPubKeyExp) =
