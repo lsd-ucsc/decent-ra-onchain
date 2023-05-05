@@ -34,3 +34,10 @@ library OIDs {
     bytes32 constant OID_STD_REP_DATA =
         0x6982f5c89a94ffdfaaab8591c1b5f7c2f782b01e030101000000000000000000;
 }
+
+library Names {
+
+    string constant IAS_ROOT_CERT_CN = "Intel SGX Attestation Report Signing CA";
+    bytes32 constant HASH_IAS_ROOT_CERT_CN = keccak256(bytes(IAS_ROOT_CERT_CN));
+
+}

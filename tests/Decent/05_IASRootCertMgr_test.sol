@@ -32,6 +32,22 @@ contract IASRootCertMgr_testSuit {
                 TestCerts.IAS_ROOT_CERT_NOT_AFTER,
                 "notAfter not match"
             );
+
+            iasRootCertMgr.requireValidity();
+
+            (bytes memory pubKeyMod, bytes memory pubKeyExp) =
+                iasRootCertMgr.getPubKey();
+
+            Assert.equal(
+                keccak256(pubKeyMod),
+                keccak256(TestCerts.IAS_ROOT_CERT_KEY_MOD),
+                "pubKey mod not match"
+            );
+            Assert.equal(
+                keccak256(pubKeyExp),
+                keccak256(TestCerts.IAS_ROOT_CERT_KEY_EXP),
+                "pubKey exp not match"
+            );
         } catch Error(string memory reason) {
             Assert.ok(false, reason);
         } catch (bytes memory /*lowLevelData*/) {

@@ -10,6 +10,7 @@ contract IASRootCertMgr {
     using IASRootCert for IASRootCert.IASRootCertObj;
 
     //===== Member variables =====
+
     IASRootCert.IASRootCertObj private m_rootCert;
 
     //===== Constructor =====
@@ -22,6 +23,14 @@ contract IASRootCertMgr {
 
     function getNotAfter() external view returns (uint256) {
         return m_rootCert.notAfter;
+    }
+
+    function requireValidity() external view {
+        require(block.timestamp < m_rootCert.notAfter, "IAS root expired");
+    }
+
+    function getPubKey() external view returns (bytes memory, bytes memory) {
+        return (m_rootCert.pubKeyMod, m_rootCert.pubKeyExp);
     }
 
 }

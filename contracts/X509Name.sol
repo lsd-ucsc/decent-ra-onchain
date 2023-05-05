@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 
 import {Asn1Decode, NodePtr} from "./asn1-decode/Asn1Decode.sol";
-import {OIDs} from "./OIDs.sol";
+import {OIDs} from "./Constants.sol";
 
 
 library X509Name {

@@ -11,6 +11,7 @@ import "remix_accounts.sol";
 
 
 import {IASRootCert} from "../../contracts/IASRootCert.sol";
+import {Names} from "../../contracts/Constants.sol";
 import {TestCerts} from "../TestCerts.sol";
 
 
@@ -25,12 +26,12 @@ contract IASRootCert_testSuit {
 
     function constantTest() public {
         Assert.equal(
-            keccak256(bytes(IASRootCert.IAS_ROOT_CERT_CN)),
+            keccak256(bytes(Names.IAS_ROOT_CERT_CN)),
             keccak256(bytes(TestCerts.IAS_ROOT_CERT_NAME_CN)),
             "IAS_ROOT_CERT_CN not match"
         );
         Assert.equal(
-            IASRootCert.HASH_IAS_ROOT_CERT_CN,
+            Names.HASH_IAS_ROOT_CERT_CN,
             keccak256(bytes(TestCerts.IAS_ROOT_CERT_NAME_CN)),
             "HASH_IAS_ROOT_CERT_CN not match"
         );

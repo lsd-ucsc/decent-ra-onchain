@@ -1,6 +1,7 @@
 MODULE_NAME := contracts
 CONTRACTS   := \
-	IASRootCertMgr
+	IASRootCertMgr \
+	IASReportCertMgr
 
 CHECKSUM_BIN := openssl sha256
 

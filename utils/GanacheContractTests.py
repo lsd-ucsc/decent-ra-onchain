@@ -64,6 +64,17 @@ def LoadIASRootCertDer() -> bytes:
 	return der
 
 
+def LoadIASReportCertDer() -> bytes:
+	with open(os.path.join(CERTS_DIR, 'CertIASReport.pem'), 'r') as f:
+		iasRootCertPem = f.read()
+
+	# PEM to DER
+	cert = x509.load_pem_x509_certificate(iasRootCertPem.encode('utf-8'))
+	der = cert.public_bytes(encoding=Encoding.DER)
+
+	return der
+
+
 def RunTests() -> None:
 	# connect to ganache
 	ganacheUrl = 'http://localhost:{}'.format(GANACHE_PORT)
@@ -107,6 +118,46 @@ def RunTests() -> None:
 	iasRootAddr = iasRootReceipt.contractAddress
 	print('IASRootCertMgr contract deployed at {}'.format(iasRootAddr))
 
+	# deploy IASReportCertMgr contract
+	print('Deploying IASReportCertMgr contract...')
+	iasReportContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='IASReportCertMgr',
+		release=None, # use locally built contract
+		address=None, # deploy new contract
+	)
+	iasReportReceipt = EthContractHelper.DeployContract(
+		w3=w3,
+		contract=iasReportContract,
+		arguments=[ iasRootAddr ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	iasReportAddr = iasReportReceipt.contractAddress
+	print('IASReportCertMgr contract deployed at {}'.format(iasReportAddr))
+	iasReportContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='IASReportCertMgr',
+		release=None, # use locally built contract
+		address=iasReportAddr
+	)
+
+	# verify IAS report certificate
+	print('Verifying IAS report certificate...')
+	EthContractHelper.CallContractFunc(
+		w3=w3,
+		contract=iasReportContract,
+		funcName='verifyCert',
+		arguments=[ LoadIASReportCertDer() ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
 
 
 def StopGanache(ganacheProc: subprocess.Popen) -> None:

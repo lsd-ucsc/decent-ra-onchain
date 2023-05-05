@@ -37,6 +37,11 @@ library LibParamPassing {
         return 3;
     }
 
+    function internCallFunc(bytes calldata b) internal pure returns (uint256) {
+        require(b[0] == 0x01, "b[0]!=1");
+        return 3;
+    }
+
     function externMemFunc(bytes memory b) external pure returns (uint256) {
         require(b[0] == 0x01, "b[0]!=1");
         return 3;
@@ -56,6 +61,18 @@ contract ContraParamPassing {
     }
 
     constructor() {}
+
+    function forwardInternCallFunc(bytes calldata b)
+        external
+        view
+        returns (uint256)
+    {
+        uint256 gasUsed = gasleft();
+        uint256 retVal = LibParamPassing.internCallFunc(b);
+        gasUsed -= gasleft();
+        require(retVal == 3, "retVal!=3");
+        return gasUsed;
+    }
 
     function pubMemFunc(Struct1 memory s) public pure returns (uint256) {
         s.a = 1;

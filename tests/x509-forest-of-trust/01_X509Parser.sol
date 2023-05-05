@@ -10,6 +10,9 @@ import {X509Parser} from "../../libs/x509-forest-of-trust/X509Parser.sol";
 
 contract X509Parser_proxy{
 	function toTimestampTest() external {
+
+		// IAS Root Cert
+
 		{
 			uint256 gasUsed = gasleft();
 			uint256 result = X509Parser.toTimestamp("161114153731Z");
@@ -47,6 +50,18 @@ contract X509Parser_proxy{
 		{
 			uint256 result = X509Parser.toTimestamp(hex"32303439313233313233353935395A");
 			Assert.equal(result, 2524607999, "timestamp not equal");
+		}
+
+		// IAS Report Cert
+
+		{
+			uint256 result = X509Parser.toTimestamp(hex"3136313132323039333635385A");
+			Assert.equal(result, 1479807418, "timestamp not equal");
+		}
+
+		{
+			uint256 result = X509Parser.toTimestamp(hex"3236313132303039333635385A");
+			Assert.equal(result, 1795167418, "timestamp not equal");
 		}
 	}
 }

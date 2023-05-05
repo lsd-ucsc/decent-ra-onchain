@@ -26,7 +26,7 @@ contract ParamPassing_testSuite {
     }
 
     /**
-     * library + internal ==> Pass by reference
+     * library + memory + internal ==> Pass by reference
      */
     function libInternMemFunc() public {
         LibParamPassing.Struct1 memory s;
@@ -95,6 +95,10 @@ contract ParamPassing_testSuite {
         Assert.equal(retVal, 3, "retVal must be 3");
         Assert.greaterThan(pubCallGasUsed, uint256(50000), "pubCallGasUsed");
         // Assert.equal(pubCallGasUsed, 281951, "pubCallGasUsed");
+
+        uint256 internCallGasUsed = c.forwardInternCallFunc(b);
+        Assert.lesserThan(internCallGasUsed, uint256(500), "internCallGasUsed");
+        Assert.equal(internCallGasUsed, 166, "internCallGasUsed");
     }
 
     /**
