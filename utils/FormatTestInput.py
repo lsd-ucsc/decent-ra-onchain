@@ -13,8 +13,10 @@ import os
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.hazmat.primitives.serialization import PublicFormat
+from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePublicKey
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 from cryptography.hazmat.primitives.asymmetric.types import CertificatePublicKeyTypes
 
@@ -66,6 +68,16 @@ def _FormatRSAPubKey(pubKey: RSAPublicKey) -> None:
 	FormatAndPrintInt(num.e)
 
 
+def _FormatEcPubKey(pubKey: EllipticCurvePublicKey) -> None:
+	num = pubKey.public_numbers()
+
+	print('Public Key X Hex:')
+	FormatAndPrintInt(num.x)
+
+	print('Public Key Y Hex:')
+	FormatAndPrintInt(num.y)
+
+
 def _FormatPubKey(pubKey: CertificatePublicKeyTypes) -> None:
 	pubKeyDer = pubKey.public_bytes(
 		encoding=Encoding.DER,
@@ -78,9 +90,7 @@ def _FormatPubKey(pubKey: CertificatePublicKeyTypes) -> None:
 	if isinstance(pubKey, RSAPublicKey):
 		_FormatRSAPubKey(pubKey)
 	else:
-		raise NotImplementedError(
-			f'Public key type {type(pubKey)} not supported'
-		)
+		_FormatEcPubKey(pubKey)
 
 
 def FormatCert(inputFile: os.PathLike) -> None:
@@ -110,12 +120,16 @@ def FormatCert(inputFile: os.PathLike) -> None:
 	_FormatPubKey(pubKey)
 
 
+def GenerateSecp256k1Key() -> None:
+	privKey = ec.generate_private_key(
+		curve=ec.SECP256K1(),
+	)
+	pubKey = privKey.public_key()
+	_FormatPubKey(pubKey)
+
+
 def main():
 	parser = argparse.ArgumentParser(description='Format the test input file.')
-	parser.add_argument(
-		'--input', type=str, required=True,
-		help='The input file.'
-	)
 	opParser = parser.add_subparsers(
 		dest='operation', required=True,
 		help='Operation to be performed',
@@ -123,10 +137,28 @@ def main():
 	opParserCert = opParser.add_parser(
 		'cert', help='Formatting the certificate'
 	)
+	opParserCert.add_argument(
+		'--input', type=str, required=True,
+		help='The input file.'
+	)
+	opReadHex = opParser.add_parser(
+		'hex', help='Formatting the given hex string'
+	)
+	opReadHex.add_argument(
+		'--input', type=str, required=True,
+		help='The input file.'
+	)
+	opReadHex = opParser.add_parser(
+		'gen256k1', help='Generate a secp256k1 key'
+	)
 	args = parser.parse_args()
 
 	if args.operation == 'cert':
 		FormatCert(args.input)
+	elif args.operation == 'hex':
+		print(FormatHex(args.input))
+	elif args.operation == 'gen256k1':
+		GenerateSecp256k1Key()
 	else:
 		raise NotImplementedError(
 			f'Operation {args.operation} not implemented'
