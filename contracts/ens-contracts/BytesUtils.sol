@@ -489,4 +489,27 @@ library BytesUtils {
         }
         return type(uint256).max;
     }
+
+
+    function contains(
+        bytes memory self,
+        bytes32 target
+    )
+        internal
+        pure
+        returns (bool)
+    {
+        require(self.length % 32 == 0, "Invalid length");
+        uint256 cpmRes;
+        for (uint i = 0; i < self.length; i += 32) {
+            assembly {
+                cpmRes := eq(mload(add(self, add(i, 32))), target)
+            }
+            if (cpmRes == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

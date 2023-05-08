@@ -164,4 +164,36 @@ contract IASReportCertMgr_testSuit {
         }
     }
 
+    function verifySignTest() public {
+
+        IASRootCertMgr rootCertMgr =
+            new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER);
+        IASReportCertMgr iasReportCertMgr =
+            new IASReportCertMgr(address(rootCertMgr));
+
+        bytes memory reportCertDer = TestCerts.IAS_REPORT_CERT_DER;
+
+        try iasReportCertMgr.verifyCert(reportCertDer) {
+            Assert.ok(true, "cert verified");
+        } catch Error(string memory reason) {
+            Assert.ok(false, reason);
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, "unexpected error");
+        }
+
+        bytes32 repKeyId = keccak256(TestCerts.IAS_REPORT_CERT_KEY_DER);
+
+        try iasReportCertMgr.verifySign(
+            repKeyId,
+            sha256(TestCerts.DECENT_SVR_CERT_ATT_REP_JSON),
+            TestCerts.DECENT_SVR_CERT_ATT_REP_SIGN
+        ) returns (bool vrfyRes) {
+            Assert.ok(vrfyRes, "sign not verified");
+        } catch Error(string memory reason) {
+            Assert.ok(false, reason);
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, "unexpected error");
+        }
+    }
+
 }

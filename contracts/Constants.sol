@@ -48,6 +48,8 @@ library Names {
     string constant IAS_ROOT_CERT_CN = "Intel SGX Attestation Report Signing CA";
     bytes32 constant HASH_IAS_ROOT_CERT_CN = keccak256(bytes(IAS_ROOT_CERT_CN));
 
+    bytes constant DECENT_PLATFORM_EPID = "SGX_EPID";
+
 }
 
 library Curves {

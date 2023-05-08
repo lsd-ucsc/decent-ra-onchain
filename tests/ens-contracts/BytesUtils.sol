@@ -165,4 +165,138 @@ contract BytesUtils_proxy {
         }
     }
 
+    function concatTest() external {
+        {
+            bytes memory exp =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"21223344556677889900AABBCCDDEEFF"  // 32 bytes
+                hex"31223344556677889900AABBCCDDEEFF"  // 48 bytes
+                hex"41223344556677889900AABBCCDDEEFF"; // 64 bytes
+            bytes32 a =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"21223344556677889900AABBCCDDEEFF"; // 32 bytes
+            bytes32 b =
+                hex"31223344556677889900AABBCCDDEEFF"  // 48 bytes
+                hex"41223344556677889900AABBCCDDEEFF"; // 64 bytes
+
+            bytes memory actual = abi.encodePacked(a, b);
+
+            Assert.equal(
+                actual.length,
+                exp.length,
+                "concat (bytes32, bytes32) length mismatch"
+            );
+            Assert.equal(
+                keccak256(actual),
+                keccak256(exp),
+                "concat (bytes32, bytes32) mismatch"
+            );
+        }
+
+        {
+            bytes memory exp =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FFEEDDCCBBAA00998877665544332211"  // 32 bytes
+                hex"1234567890ABCDEF1234567890ABCDEF"  // 48 bytes
+                hex"FEDCBA0987654321FEDCBA0987654321"; // 64 bytes
+            bytes32 a =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FFEEDDCCBBAA00998877665544332211"; // 32 bytes
+            bytes32 b =
+                hex"1234567890ABCDEF1234567890ABCDEF"  // 48 bytes
+                hex"FEDCBA0987654321FEDCBA0987654321"; // 64 bytes
+
+            bytes memory actual = abi.encodePacked(a, b);
+
+            Assert.equal(
+                actual.length,
+                exp.length,
+                "concat (bytes32, bytes32) length mismatch"
+            );
+            Assert.equal(
+                keccak256(actual),
+                keccak256(exp),
+                "concat (bytes32, bytes32) mismatch"
+            );
+        }
+    }
+
+    function containsTest() external {
+        {
+            bytes memory concatList = hex"";
+            bytes32 target =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"21223344556677889900AABBCCDDEEFF"; // 32 bytes
+
+            bool res = BytesUtils.contains(concatList, target);
+            Assert.equal(res, false, "contains (empty list) mismatch");
+        }
+        {
+            bytes memory concatList =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"21223344556677889900AABBCCDDEEFF"; // 32 bytes
+
+            bytes32 target =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"21223344556677889900AABBCCDDEEFF"; // 32 bytes
+
+            bool res = BytesUtils.contains(concatList, target);
+            Assert.equal(res, true, "contains 1 mismatch");
+        }
+        {
+            bytes memory concatList =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"21223344556677889900AABBCCDDEEFF"; // 32 bytes
+
+            bytes32 target =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FFEEDDCCBBAA00998877665544332211"; // 32 bytes
+
+            bool res = BytesUtils.contains(concatList, target);
+            Assert.equal(res, false, "contains 1 mismatch");
+        }
+        {
+            bytes memory concatList =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FFEEDDCCBBAA00998877665544332211"  // 32 bytes
+                hex"1234567890ABCDEF1234567890ABCDEF"  // 48 bytes
+                hex"FEDCBA0987654321FEDCBA0987654321"; // 64 bytes
+
+            bytes32 target =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FFEEDDCCBBAA00998877665544332211"; // 32 bytes
+
+            bool res = BytesUtils.contains(concatList, target);
+            Assert.equal(res, true, "contains 2 mismatch");
+        }
+        {
+            bytes memory concatList =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FFEEDDCCBBAA00998877665544332211"  // 32 bytes
+                hex"1234567890ABCDEF1234567890ABCDEF"  // 48 bytes
+                hex"FEDCBA0987654321FEDCBA0987654321"; // 64 bytes
+
+            bytes32 target =
+                hex"1234567890ABCDEF1234567890ABCDEF"  // 16 bytes
+                hex"FEDCBA0987654321FEDCBA0987654321"; // 32 bytes
+
+            bool res = BytesUtils.contains(concatList, target);
+            Assert.equal(res, true, "contains 2 mismatch");
+        }
+        {
+            bytes memory concatList =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FFEEDDCCBBAA00998877665544332211"  // 32 bytes
+                hex"1234567890ABCDEF1234567890ABCDEF"  // 48 bytes
+                hex"FEDCBA0987654321FEDCBA0987654321"; // 64 bytes
+
+            bytes32 target =
+                hex"11223344556677889900AABBCCDDEEFF"  // 16 bytes
+                hex"FEDCBA0987654321FEDCBA0987654321"; // 32 bytes
+
+            bool res = BytesUtils.contains(concatList, target);
+            Assert.equal(res, false, "contains 2 mismatch");
+        }
+    }
+
 }

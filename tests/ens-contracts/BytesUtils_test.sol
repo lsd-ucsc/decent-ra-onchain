@@ -65,4 +65,26 @@ contract BytesUtils_testSuite {
         }
     }
 
+    function concatTest() public {
+        BytesUtils_proxy testProxy = new BytesUtils_proxy();
+        try testProxy.concatTest() {
+            Assert.ok(true, "concatTest success");
+        } catch Error(string memory reason) {
+            Assert.ok(false, reason);
+        } catch (bytes memory lowLevelData) {
+            Assert.ok(false, "unexpected error - concatTest");
+        }
+    }
+
+    function containsTest() public {
+        BytesUtils_proxy testProxy = new BytesUtils_proxy();
+        try testProxy.containsTest() {
+            Assert.ok(true, "containsTest success");
+        } catch Error(string memory reason) {
+            Assert.ok(false, reason);
+        } catch (bytes memory lowLevelData) {
+            Assert.ok(false, "unexpected error - containsTest");
+        }
+    }
+
 }

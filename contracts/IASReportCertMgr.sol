@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 
 import {Interface_IASRootCertMgr} from "./Interface_IASRootCertMgr.sol";
 import {IASReportCert} from "./IASReportCert.sol";
+import {LibRsaSha256} from "./rsa/LibRsaSha256.sol";
 import {X509CertNodes} from "./X509CertNodes.sol";
 
 
@@ -37,7 +38,7 @@ contract IASReportCertMgr {
     function verifyCertWithNodes(
         X509CertNodes.CertNodesObj calldata certNodes,
         bytes memory certDer
-    ) public {
+    ) external {
         // ensure that the root CA cert is not expired
         Interface_IASRootCertMgr(m_rootCertMgrAddr).requireValidity();
 
@@ -65,7 +66,7 @@ contract IASReportCertMgr {
      */
     function verifyCert(
         bytes memory certDer
-    ) public {
+    ) external {
         X509CertNodes.CertNodesObj memory certNodes;
         X509CertNodes.loadCertNodes(certNodes, certDer);
         this.verifyCertWithNodes(certNodes, certDer);
@@ -99,6 +100,8 @@ contract IASReportCertMgr {
     /**
      * Get the public key of an IAS report signing certificate that has already
      * been verified
+     * @param reportKeyId Report key ID, which is the keccak256 hash of the
+     *                    report signing certificate's public key in DER format
      */
     function getPubKey(bytes32 reportKeyId)
         external
@@ -108,8 +111,39 @@ contract IASReportCertMgr {
         IASReportCert.IASReportCertObj storage cert = m_certs[reportKeyId];
 
         require(cert.isVerified, "report cert not verified");
+        require(block.timestamp < cert.notAfter, "report cert expired");
 
         return (cert.pubKeyMod, cert.pubKeyExp);
+    }
+
+    /**
+     * Verify the signature over a IAS report using the public key specified by
+     * the report key ID
+     * @param reportKeyId Report key ID, which is the keccak256 hash of the
+     *                    report signing certificate's public key in DER format
+     * @param repHash Hash of the report to be verified
+     * @param signature Signature that signs over the report
+     */
+    function verifySign(
+        bytes32 reportKeyId,
+        bytes32 repHash,
+        bytes memory signature
+    )
+        external
+        view
+        returns (bool)
+    {
+        IASReportCert.IASReportCertObj storage cert = m_certs[reportKeyId];
+
+        require(cert.isVerified, "report cert not verified");
+        require(block.timestamp < cert.notAfter, "report cert expired");
+
+        return LibRsaSha256.verifyWithComponents(
+            cert.pubKeyMod,
+            cert.pubKeyExp,
+            repHash,
+            signature
+        );
     }
 
 }

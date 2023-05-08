@@ -9,7 +9,10 @@
 
 
 import argparse
+import base64
+import binascii
 import os
+from typing import Union
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
@@ -128,6 +131,34 @@ def GenerateSecp256k1Key() -> None:
 	_FormatPubKey(pubKey)
 
 
+def FormatHexStrOrFile(
+	inputFileOrHex: Union[str, os.PathLike],
+	startPos: int,
+	endPos: int = -1,
+) -> None:
+	isFilePath = os.path.isfile(inputFileOrHex)
+	if isFilePath:
+		with open(inputFileOrHex, 'r') as f:
+			fileContent = f.read()
+		fileContent = fileContent.strip()
+		if fileContent.startswith('-----BEGIN CERTIFICATE-----'):
+			fileContent = fileContent.removeprefix('-----BEGIN CERTIFICATE-----')
+			fileContent = fileContent.removesuffix('-----END CERTIFICATE-----')
+		else:
+			raise ValueError('Unknown file type')
+		fileContent = fileContent.replace('\n', '')
+		fileContent = fileContent.replace('\r', '')
+		fileBytes = base64.b64decode(fileContent)
+		endPos = len(fileBytes) if endPos == -1 else endPos
+		resHex = FormatBytes(fileBytes[startPos:endPos])
+	else:
+		binascii.unhexlify(inputFileOrHex)
+		endPos = len(inputFileOrHex) // 2 if endPos == -1 else endPos
+		resHex = FormatHex(inputFileOrHex[startPos*2:endPos*2])
+
+	print(resHex)
+
+
 def main():
 	parser = argparse.ArgumentParser(description='Format the test input file.')
 	opParser = parser.add_subparsers(
@@ -148,7 +179,15 @@ def main():
 		'--input', type=str, required=True,
 		help='The input file.'
 	)
-	opReadHex = opParser.add_parser(
+	opReadHex.add_argument(
+		'--start', type=int, required=False, default=0,
+		help='The start position.'
+	)
+	opReadHex.add_argument(
+		'--end', type=int, required=False, default=-1,
+		help='The end position.'
+	)
+	opReadGen256k1 = opParser.add_parser(
 		'gen256k1', help='Generate a secp256k1 key'
 	)
 	args = parser.parse_args()
@@ -156,7 +195,7 @@ def main():
 	if args.operation == 'cert':
 		FormatCert(args.input)
 	elif args.operation == 'hex':
-		print(FormatHex(args.input))
+		FormatHexStrOrFile(args.input, args.start, args.end)
 	elif args.operation == 'gen256k1':
 		GenerateSecp256k1Key()
 	else:

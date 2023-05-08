@@ -16,10 +16,11 @@ import {RLPReader} from "../../contracts/rlp/RLPReader.sol";
 contract RLPTest {
     using RLPReader for RLPReader.RLPItem;
 
+
     function beforeAll () public {
     }
 
-    function rlpTest() external {
+    function rlpTest1() external {
         uint i = 1337;
         bytes memory rlpBytes = abi.encodePacked(i);
         RLPReader.RLPItem memory item = RLPReader.toRlpItem(rlpBytes);
