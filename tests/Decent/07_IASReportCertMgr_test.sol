@@ -21,16 +21,22 @@ contract IASReportCertMgr_testSuit {
 
     using X509CertNodes for X509CertNodes.CertNodesObj;
 
+    //===== member variables =====
+
+    address m_iasRootCertMgrAddr;
+
+    //===== functions =====
+
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeAll() public {
+        m_iasRootCertMgrAddr =
+            address(new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER));
     }
 
     function notVerifiedCertGettersTest() public {
-        IASRootCertMgr rootCertMgr =
-            new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER);
         IASReportCertMgr iasReportCertMgr =
-            new IASReportCertMgr(address(rootCertMgr));
+            new IASReportCertMgr(m_iasRootCertMgrAddr);
 
         bytes32 repKeyId = keccak256(TestCerts.IAS_REPORT_CERT_KEY_DER);
 
@@ -57,10 +63,8 @@ contract IASReportCertMgr_testSuit {
     }
 
     function verifyCertWithNodesTest() public {
-        IASRootCertMgr rootCertMgr =
-            new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER);
         IASReportCertMgr iasReportCertMgr =
-            new IASReportCertMgr(address(rootCertMgr));
+            new IASReportCertMgr(m_iasRootCertMgrAddr);
 
         bytes memory reportCertDer = TestCerts.IAS_REPORT_CERT_DER;
 
@@ -114,10 +118,8 @@ contract IASReportCertMgr_testSuit {
     }
 
     function verifyCertTest() public {
-        IASRootCertMgr rootCertMgr =
-            new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER);
         IASReportCertMgr iasReportCertMgr =
-            new IASReportCertMgr(address(rootCertMgr));
+            new IASReportCertMgr(m_iasRootCertMgrAddr);
 
         bytes memory reportCertDer = TestCerts.IAS_REPORT_CERT_DER;
 
@@ -165,11 +167,8 @@ contract IASReportCertMgr_testSuit {
     }
 
     function verifySignTest() public {
-
-        IASRootCertMgr rootCertMgr =
-            new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER);
         IASReportCertMgr iasReportCertMgr =
-            new IASReportCertMgr(address(rootCertMgr));
+            new IASReportCertMgr(m_iasRootCertMgrAddr);
 
         bytes memory reportCertDer = TestCerts.IAS_REPORT_CERT_DER;
 

@@ -176,10 +176,13 @@ library DecentServerCert {
 
         // checking IAS report signature
         bytes memory repJson = rep[1].toBytes();
-        Interface_IASReportCertMgr(iasRepCertMgrAddr).verifySign(
+        require(
+            Interface_IASReportCertMgr(iasRepCertMgrAddr).verifySign(
             repKeyId,
             sha256(repJson),
             rep[2].toBytes() // repSig
+            ),
+            "Invalid IAS report sign"
         );
 
         // checking IAS report JSON
@@ -306,7 +309,7 @@ library DecentServerCert {
         extractDecentServerKey(cert, certNodes, certDer, keyRing);
 
         // OPTIONAL: verify self-signed cert
-        verifySelfSign(cert, certNodes, certDer);
+        // verifySelfSign(cert, certNodes, certDer);
 
         // finished verification
         cert.isVerified = true;

@@ -57,6 +57,7 @@ interface Interface_IASReportCertMgr {
      *                    report signing certificate's public key in DER format
      * @param repHash Hash of the report to be verified
      * @param signature Signature that signs over the report
+     * @return bool Whether the signature is valid
      */
     function verifySign(
         bytes32 reportKeyId,

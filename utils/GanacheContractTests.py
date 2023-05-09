@@ -8,6 +8,7 @@
 ###
 
 
+import base64
 import logging
 import os
 import signal
@@ -55,10 +56,10 @@ def StartGanache() -> subprocess.Popen:
 
 def LoadIASRootCertDer() -> bytes:
 	with open(os.path.join(CERTS_DIR, 'CertIASRoot.pem'), 'r') as f:
-		iasRootCertPem = f.read()
+		certPem = f.read()
 
 	# PEM to DER
-	cert = x509.load_pem_x509_certificate(iasRootCertPem.encode('utf-8'))
+	cert = x509.load_pem_x509_certificate(certPem.encode('utf-8'))
 	der = cert.public_bytes(encoding=Encoding.DER)
 
 	return der
@@ -66,11 +67,27 @@ def LoadIASRootCertDer() -> bytes:
 
 def LoadIASReportCertDer() -> bytes:
 	with open(os.path.join(CERTS_DIR, 'CertIASReport.pem'), 'r') as f:
-		iasRootCertPem = f.read()
+		certPem = f.read()
 
 	# PEM to DER
-	cert = x509.load_pem_x509_certificate(iasRootCertPem.encode('utf-8'))
+	cert = x509.load_pem_x509_certificate(certPem.encode('utf-8'))
 	der = cert.public_bytes(encoding=Encoding.DER)
+
+	return der
+
+
+def LoadDecentServerCertDer() -> bytes:
+	with open(os.path.join(CERTS_DIR, 'CertDecentServer.pem'), 'r') as f:
+		certPem = f.read()
+
+	# PEM to DER
+	certPem = certPem.strip()
+	certPem = certPem.removeprefix('-----BEGIN CERTIFICATE-----')
+	certPem = certPem.removesuffix('-----END CERTIFICATE-----')
+
+	certPem = certPem.replace('\n', '')
+	certPem = certPem.replace('\r', '')
+	der = base64.b64decode(certPem)
 
 	return der
 
@@ -117,6 +134,7 @@ def RunTests() -> None:
 	)
 	iasRootAddr = iasRootReceipt.contractAddress
 	print('IASRootCertMgr contract deployed at {}'.format(iasRootAddr))
+	print()
 
 	# deploy IASReportCertMgr contract
 	print('Deploying IASReportCertMgr contract...')
@@ -145,6 +163,7 @@ def RunTests() -> None:
 		release=None, # use locally built contract
 		address=iasReportAddr
 	)
+	print()
 
 	# verify IAS report certificate
 	print('Verifying IAS report certificate...')
@@ -158,6 +177,50 @@ def RunTests() -> None:
 		value=0,
 		confirmPrompt=False # don't prompt for confirmation
 	)
+	print()
+
+	# deploy DecentServerCertMgr contract
+	print('Deploying DecentServerCertMgr contract...')
+	decentSvrContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='DecentServerCertMgr',
+		release=None, # use locally built contract
+		address=None, # deploy new contract
+	)
+	decentSvrReceipt = EthContractHelper.DeployContract(
+		w3=w3,
+		contract=decentSvrContract,
+		arguments=[ iasReportAddr ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	decentSvrAddr = decentSvrReceipt.contractAddress
+	print('DecentServerCertMgr contract deployed at {}'.format(decentSvrAddr))
+	decentSvrContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='DecentServerCertMgr',
+		release=None, # use locally built contract
+		address=decentSvrAddr
+	)
+	print()
+
+	# verify Decent server certificate
+	print('Verifying Decent Server certificate...')
+	EthContractHelper.CallContractFunc(
+		w3=w3,
+		contract=decentSvrContract,
+		funcName='verifyCert',
+		arguments=[ LoadDecentServerCertDer() ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	print()
 
 
 def StopGanache(ganacheProc: subprocess.Popen) -> None:
