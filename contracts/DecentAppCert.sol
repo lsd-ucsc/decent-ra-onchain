@@ -161,6 +161,9 @@ library DecentAppCert {
         extractDecentAppKey(self, appCertDer, certNodes);
 
         extractAppCertExtensions(self, appCertDer, certNodes);
+
+        // finished verification
+        self.isVerified = true;
     }
 
     /**
