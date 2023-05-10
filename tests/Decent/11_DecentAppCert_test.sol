@@ -58,4 +58,14 @@ contract DecentAppCert_testSuit {
         }
     }
 
+    function loadCertTest() public {
+        try DecentAppCert_proxy(m_testProxyAddr).loadCertTest() {
+            Assert.ok(true, "loadCertTest should not throw");
+        } catch Error(string memory reason) {
+            Assert.ok(false, reason);
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, "unexpected error - loadCertTest");
+        }
+    }
+
 }

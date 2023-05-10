@@ -105,25 +105,15 @@ library LibSecp256k1Sha256 {
     )
         internal
         pure
-        returns (address addr, uint8 recoverId)
+        returns (address addr)
     {
         require(pubKeyBytes.length == 64, "len(pkey)!=64");
-        uint256 x = uint256(pubKeyBytes.readBytes32(0));
-        // N is the order of the curve [src:https://en.bitcoin.it/wiki/Secp256k1]
-        bool isXHigherThanOrder = x > Curves.SECP256K1_N;
-        bool isYOdd = ((pubKeyBytes[63] & 0x01) == 0x01);
-        recoverId = determineRecoverId(
-            false, // we only support uncompressed format
-            isXHigherThanOrder,
-            isYOdd
-        );
         addr = address(uint160(uint256(keccak256(pubKeyBytes))));
     }
 
     function verifySignMsg(
         address signerAddr,
         bytes memory msgBytes,
-        uint8 recoverId,
         bytes32 r,
         bytes32 s
     )
@@ -131,18 +121,19 @@ library LibSecp256k1Sha256 {
         pure
         returns (bool)
     {
-        return ecrecover(
-            sha256(msgBytes),
-            recoverId,
-            r,
-            s
-        ) == signerAddr;
+        // we have to try 27 and then 28, because it's depending on the R.Y's
+        // parity bit, which we don't have access to at this point
+        // (R.Y is the randome point R's Y coordinate value, where the R is
+        // randomly generated during the signing process; the X coordinate is
+        // the r)
+        return
+            (ecrecover(sha256(msgBytes), 27, r, s) == signerAddr) ||
+            (ecrecover(sha256(msgBytes), 28, r, s) == signerAddr);
     }
 
     function verifySignHash(
         address signerAddr,
         bytes32 msgHash,
-        uint8 recoverId,
         bytes32 r,
         bytes32 s
     )
@@ -150,12 +141,9 @@ library LibSecp256k1Sha256 {
         pure
         returns (bool)
     {
-        return ecrecover(
-            msgHash,
-            recoverId,
-            r,
-            s
-        ) == signerAddr;
+        return
+            (ecrecover(msgHash, 27, r, s) == signerAddr) ||
+            (ecrecover(msgHash, 28, r, s) == signerAddr);
     }
 
 }

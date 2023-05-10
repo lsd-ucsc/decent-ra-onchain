@@ -24,11 +24,9 @@ library DecentAppCert {
         bool isVerified;
 
         address issuerKeyAddr;
-        uint8 issuerRecId;
         bytes32 issuerEnclaveHash;
 
         address appKeyAddr;
-        uint8 appRecId;
         bytes32 appEnclaveHash;
         bytes appPlatform;
         bytes appAuthList;
@@ -55,7 +53,7 @@ library DecentAppCert {
             "Unsupported curve"
         );
 
-        (self.appKeyAddr, self.appRecId) =
+        self.appKeyAddr =
             LibSecp256k1Sha256.pubKeyBytesToAddr(
                 certNodes.tbs.extractPubKeyBytes(appCertDer)
             );
@@ -76,7 +74,6 @@ library DecentAppCert {
             LibSecp256k1Sha256.verifySignMsg(
                 self.issuerKeyAddr,
                 appCertDer.allBytesAt(certNodes.tbs.root),
-                self.issuerRecId,
                 signR,
                 signS
             ),
@@ -131,8 +128,8 @@ library DecentAppCert {
     /**
      * read and verify Decent App Certificate, and thn load infos into DecentApp
      * struct
-     * @param self DecentApp struct NOTE: the issuerKeyAddr and issuerRecId
-     *             fields must be set before calling this function
+     * @param self DecentApp struct NOTE: the issuerKeyAddr
+     *             field must be set before calling this function
      * @param appCertDer Decent App Certificate in DER format
      */
     function loadCert(
@@ -144,6 +141,17 @@ library DecentAppCert {
     {
         X509CertNodes.CertNodesObj memory certNodes;
         certNodes.loadCertNodes(appCertDer);
+
+        // Check signature algorithm
+        bytes32 algType;
+        // algType = appCertDer.bytes32At(
+        //     appCertDer.firstChildOf(certNodes.tbs.algTypeNode)
+        // );
+        // require(algType == OIDs.OID_ALG_ECDSA_SHA_256, "alg type mismatch");
+        algType = appCertDer.bytes32At(
+            appCertDer.firstChildOf(certNodes.algTypeNode)
+        );
+        require(algType == OIDs.OID_ALG_ECDSA_SHA_256, "alg type mismatch");
 
         verifyAppCertSign(self, appCertDer, certNodes);
 

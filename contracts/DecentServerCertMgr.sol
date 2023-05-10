@@ -71,22 +71,20 @@ contract DecentServerCertMgr {
     /**
      * Check if a Decent Server certificate has been verified or not
      * @param svrKeyAddr Address derived from the Decent Server public key
-     * @return uint8 Recover ID of the certificate,
-     *               or type(uint8).max if not verified
      * @return bytes32 Enclave hash of the Decent Server,
      *                 or 32 bytes of zeros if not verified
      */
     function isDecentServer(address svrKeyAddr)
         external
         view
-        returns (uint8, bytes32)
+        returns (bytes32)
     {
         DecentServerCert.DecentServerCertObj storage cert =
             m_serverCerts[svrKeyAddr];
 
         return cert.isVerified ?
-            (cert.recoverId, cert.enclaveHash) :
-            (type(uint8).max, bytes32(0));
+            cert.enclaveHash :
+            bytes32(0);
     }
 
 }

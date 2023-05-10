@@ -5,6 +5,7 @@ pragma solidity >=0.4.17 <0.9.0;
 // This import is automatically injected by Remix
 import "remix_tests.sol";
 
+import {Asn1Decode} from "../../contracts/asn1-decode/Asn1Decode.sol";
 import {DecentAppCert} from "../../contracts/DecentAppCert.sol";
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
 
@@ -13,6 +14,7 @@ import {TestCerts} from "../TestCerts.sol";
 
 contract DecentAppCert_proxy {
 
+    using Asn1Decode for bytes;
     using DecentAppCert for DecentAppCert.DecentApp;
     using X509CertNodes for X509CertNodes.CertNodesObj;
 
@@ -32,11 +34,6 @@ contract DecentAppCert_proxy {
             TestCerts.DECENT_APP_CERT_KEY_ADDR,
             "appKeyAddr should be equal"
         );
-        Assert.equal(
-            decentApp.appRecId,
-            TestCerts.DECENT_APP_CERT_KEY_V,
-            "appRecId should be equal"
-        );
     }
 
     function verifyAppCertSignTest() public {
@@ -47,7 +44,6 @@ contract DecentAppCert_proxy {
         certNodes.loadCertNodes(appCertDer);
 
         decentApp.issuerKeyAddr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
-        decentApp.issuerRecId = TestCerts.DECENT_SVR_CERT_KEY_V;
 
         decentApp.verifyAppCertSign(appCertDer, certNodes);
     }
@@ -83,7 +79,6 @@ contract DecentAppCert_proxy {
 
         DecentAppCert.DecentApp memory decentApp;
         decentApp.issuerKeyAddr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
-        decentApp.issuerRecId = TestCerts.DECENT_SVR_CERT_KEY_V;
 
         decentApp.loadCert(appCertDer);
 
@@ -91,11 +86,6 @@ contract DecentAppCert_proxy {
             decentApp.appKeyAddr,
             TestCerts.DECENT_APP_CERT_KEY_ADDR,
             "appKeyAddr should be equal"
-        );
-        Assert.equal(
-            decentApp.appRecId,
-            TestCerts.DECENT_APP_CERT_KEY_V,
-            "appRecId should be equal"
         );
         Assert.equal(
             keccak256(decentApp.appPlatform),

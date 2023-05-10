@@ -146,7 +146,6 @@ contract DecentServerCert_proxy {
 
         DecentServerCert.DecentServerCertObj memory cert;
         cert.serverKeyAddr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
-        cert.recoverId = TestCerts.DECENT_SVR_CERT_KEY_V;
 
         cert.verifySelfSign(certNodes, certDer);
     }
@@ -168,11 +167,6 @@ contract DecentServerCert_proxy {
             cert.serverKeyAddr,
             TestCerts.DECENT_SVR_CERT_KEY_ADDR,
             "serverKeyAddr mismatch"
-        );
-        Assert.equal(
-            cert.recoverId,
-            TestCerts.DECENT_SVR_CERT_KEY_V,
-            "recoverId mismatch"
         );
     }
 
@@ -197,11 +191,6 @@ contract DecentServerCert_proxy {
             cert.serverKeyAddr,
             TestCerts.DECENT_SVR_CERT_KEY_ADDR,
             "serverKeyAddr mismatch"
-        );
-        Assert.equal(
-            cert.recoverId,
-            TestCerts.DECENT_SVR_CERT_KEY_V,
-            "recoverId mismatch"
         );
     }
 

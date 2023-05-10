@@ -33,7 +33,6 @@ library DecentServerCert {
     struct DecentServerCertObj {
         bool isVerified;
         address serverKeyAddr;
-        uint8 recoverId;
         bytes32 enclaveHash;
     }
 
@@ -220,7 +219,7 @@ library DecentServerCert {
             "Unsupported curve"
         );
 
-        (cert.serverKeyAddr, cert.recoverId) =
+        cert.serverKeyAddr =
             LibSecp256k1Sha256.pubKeyBytesToAddr(
                 certNodes.tbs.extractPubKeyBytes(certDer)
             );
@@ -240,7 +239,6 @@ library DecentServerCert {
             LibSecp256k1Sha256.verifySignMsg(
                 cert.serverKeyAddr,
                 certDer.allBytesAt(certNodes.tbs.root),
-                cert.recoverId,
                 signR,
                 signS
             ),
@@ -257,6 +255,17 @@ library DecentServerCert {
     )
         internal
     {
+        // Check signature algorithm
+        bytes32 algType;
+        // algType = certDer.bytes32At(
+        //     certDer.firstChildOf(certNodes.tbs.algTypeNode)
+        // );
+        // require(algType == OIDs.OID_ALG_ECDSA_SHA_256, "alg type mismatch");
+        algType = certDer.bytes32At(
+            certDer.firstChildOf(certNodes.algTypeNode)
+        );
+        require(algType == OIDs.OID_ALG_ECDSA_SHA_256, "alg type mismatch");
+
         // extracting extensions
         X509Extension.ExtEntry[] memory extEntries =
             new X509Extension.ExtEntry[](5);

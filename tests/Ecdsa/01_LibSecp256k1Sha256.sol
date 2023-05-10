@@ -111,60 +111,143 @@ contract LibSecp256k1Sha256_proxy {
         bytes memory pubKeyBytes =
             certNodes.tbs.extractPubKeyBytes(certDer);
 
-        (address addr, uint8 recId) =
+        address addr =
             LibSecp256k1Sha256.pubKeyBytesToAddr(pubKeyBytes);
 
         Assert.equal(
             addr, TestCerts.DECENT_SVR_CERT_KEY_ADDR,
             "addr!=DECENT_SVR_CERT_KEY_ADDR"
         );
-        Assert.equal(recId, 28, "recId!=28");
 
-        // Test EC key 01 (even y)
-        (addr, recId) =
-            LibSecp256k1Sha256.pubKeyBytesToAddr(TEST_ECKEY_01_BYTES);
+        // Test EC key 01
+        addr = LibSecp256k1Sha256.pubKeyBytesToAddr(TEST_ECKEY_01_BYTES);
         Assert.equal(addr, TEST_ECKEY_01_ADDR, "addr!=TEST_ECKEY_01_ADDR");
-        Assert.equal(recId, 27, "recId!=27");
 
-        // Test EC key 02 (even y)
-        (addr, recId) =
-            LibSecp256k1Sha256.pubKeyBytesToAddr(TEST_ECKEY_02_BYTES);
+        // Test EC key 02
+        addr = LibSecp256k1Sha256.pubKeyBytesToAddr(TEST_ECKEY_02_BYTES);
         Assert.equal(addr, TEST_ECKEY_02_ADDR, "addr!=TEST_ECKEY_02_ADDR");
-        Assert.equal(recId, 27, "recId!=27");
 
-        // Test EC key 03 (odd y)
-        (addr, recId) =
-            LibSecp256k1Sha256.pubKeyBytesToAddr(TEST_ECKEY_03_BYTES);
+        // Test EC key 03
+        addr = LibSecp256k1Sha256.pubKeyBytesToAddr(TEST_ECKEY_03_BYTES);
         Assert.equal(addr, TEST_ECKEY_03_ADDR, "addr!=TEST_ECKEY_03_ADDR");
-        Assert.equal(recId, 28, "recId!=28");
     }
 
     function verifySignMsgTest() public {
-        bytes memory certDer = TestCerts.DECENT_SVR_CERT_DER;
+        // OK
+        {
+            bytes memory certDer = TestCerts.DECENT_SVR_CERT_DER;
 
-        X509CertNodes.CertNodesObj memory certNodes;
-        certNodes.loadCertNodes(certDer);
+            X509CertNodes.CertNodesObj memory certNodes;
+            certNodes.loadCertNodes(certDer);
 
-        bytes memory pubKeyBytes =
-            certNodes.tbs.extractPubKeyBytes(certDer);
+            address addr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
+            bytes32 r = TestCerts.DECENT_SVR_CERT_SIGN_R;
+            bytes32 s = TestCerts.DECENT_SVR_CERT_SIGN_S;
 
-        (address addr, uint8 recId) =
-            LibSecp256k1Sha256.pubKeyBytesToAddr(pubKeyBytes);
+            bytes memory tbsBytes = certDer.allBytesAt(certNodes.tbs.root);
+            bytes32 tbsHash = sha256(tbsBytes);
 
-        (bytes32 r, bytes32 s) =
-            certNodes.extractSignRS(certDer);
+            Assert.equal(
+                ecrecover(tbsHash, 28, r, s),
+                addr,
+                "ecrecover()!=addr"
+            );
+            Assert.ok(
+                LibSecp256k1Sha256.verifySignMsg(addr, tbsBytes, r, s),
+                "verifySignMsg!=true"
+            );
+            Assert.ok(
+                LibSecp256k1Sha256.verifySignHash(addr, tbsHash, r, s),
+                "verifySignHash!=true"
+            );
+        }
 
-        bytes memory tbsBytes = certDer.allBytesAt(certNodes.tbs.root);
-        bytes32 tbsHash = sha256(tbsBytes);
+        // OK
+        {
+            bytes memory certDer = TestCerts.DECENT_APP_CERT_DER;
 
-        Assert.ok(
-            LibSecp256k1Sha256.verifySignMsg(addr, tbsBytes, recId, r, s),
-            "verifySignMsg!=true"
-        );
-        Assert.ok(
-            LibSecp256k1Sha256.verifySignHash(addr, tbsHash, recId, r, s),
-            "verifySignHash!=true"
-        );
+            X509CertNodes.CertNodesObj memory certNodes;
+            certNodes.loadCertNodes(certDer);
+
+            address addr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
+            bytes32 r = TestCerts.DECENT_APP_CERT_SIGN_R;
+            bytes32 s = TestCerts.DECENT_APP_CERT_SIGN_S;
+
+            bytes memory tbsBytes = certDer.allBytesAt(certNodes.tbs.root);
+            bytes32 tbsHash = sha256(tbsBytes);
+
+            Assert.equal(
+                ecrecover(tbsHash, 27, r, s),
+                addr,
+                "ecrecover()!=addr"
+            );
+            Assert.ok(
+                LibSecp256k1Sha256.verifySignMsg(addr, tbsBytes, r, s),
+                "verifySignMsg!=true"
+            );
+            Assert.ok(
+                LibSecp256k1Sha256.verifySignHash(addr, tbsHash, r, s),
+                "verifySignHash!=true"
+            );
+        }
+
+        // should fail
+        {
+            bytes memory certDer = TestCerts.DECENT_APP_CERT_DER;
+
+            X509CertNodes.CertNodesObj memory certNodes;
+            certNodes.loadCertNodes(certDer);
+
+            address addr = TestCerts.DECENT_APP_CERT_KEY_ADDR;
+            bytes32 r = TestCerts.DECENT_APP_CERT_SIGN_R;
+            bytes32 s = TestCerts.DECENT_APP_CERT_SIGN_S;
+
+            bytes memory tbsBytes = certDer.allBytesAt(certNodes.tbs.root);
+            bytes32 tbsHash = sha256(tbsBytes);
+
+            Assert.ok(
+                !LibSecp256k1Sha256.verifySignMsg(addr, tbsBytes, r, s),
+                "verifySignMsg==true"
+            );
+            Assert.ok(
+                !LibSecp256k1Sha256.verifySignHash(addr, tbsHash, r, s),
+                "verifySignHash==true"
+            );
+        }
+    }
+
+    function verifySignHashGasEval() public {
+        {
+            address addr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
+
+            bytes32 r = TestCerts.DECENT_SVR_CERT_SIGN_R;
+            bytes32 s = TestCerts.DECENT_SVR_CERT_SIGN_S;
+            bytes32 tbsHash = TestCerts.DECENT_SVR_CERT_HASH;
+            // recovery ID is 28
+
+            bool res;
+            uint256 gasUsed = gasleft();
+            res = LibSecp256k1Sha256.verifySignHash(addr, tbsHash, r, s);
+            gasUsed = gasUsed - gasleft();
+            Assert.ok(res, "verifySignHash!=true");
+            // Assert.equal(gasUsed, 6796, "gasUsed");
+        }
+
+        {
+            address addr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
+
+            bytes32 r = TestCerts.DECENT_APP_CERT_SIGN_R;
+            bytes32 s = TestCerts.DECENT_APP_CERT_SIGN_S;
+            bytes32 tbsHash = TestCerts.DECENT_APP_CERT_HASH;
+            // recovery ID is 27
+
+            bool res;
+            uint256 gasUsed = gasleft();
+            res = LibSecp256k1Sha256.verifySignHash(addr, tbsHash, r, s);
+            gasUsed = gasUsed - gasleft();
+            Assert.ok(res, "verifySignHash!=true");
+            // Assert.equal(gasUsed, 3431, "gasUsed");
+        }
     }
 
 }

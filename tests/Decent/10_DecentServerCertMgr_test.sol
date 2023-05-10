@@ -60,10 +60,9 @@ contract DecentServerCertMgr_testSuit {
             Assert.ok(false, "unexpected error");
         }
 
-        (uint8 recId, bytes32 encHash) =
+        bytes32 encHash =
             decentServerCertMgr.isDecentServer(TestCerts.DECENT_SVR_CERT_KEY_ADDR);
 
-        Assert.equal(recId, TestCerts.DECENT_SVR_CERT_KEY_V, "recId not match");
         Assert.equal(
             encHash,
             TestCerts.DECENT_SVR_CERT_ENCL_HASH,
@@ -85,10 +84,9 @@ contract DecentServerCertMgr_testSuit {
             Assert.ok(false, "unexpected error");
         }
 
-        (uint8 recId, bytes32 encHash) =
+        bytes32 encHash =
             decentServerCertMgr.isDecentServer(TestCerts.DECENT_SVR_CERT_KEY_ADDR);
 
-        Assert.equal(recId, TestCerts.DECENT_SVR_CERT_KEY_V, "recId not match");
         Assert.equal(
             encHash,
             TestCerts.DECENT_SVR_CERT_ENCL_HASH,
@@ -118,10 +116,9 @@ contract DecentServerCertMgr_testSuit {
             Assert.ok(false, "unexpected error");
         }
 
-        (uint8 recId, bytes32 encHash) =
+        bytes32 encHash =
             decentServerCertMgr.isDecentServer(TestCerts.DECENT_SVR_CERT_KEY_ADDR);
 
-        Assert.equal(recId, 255, "recId not match");
         Assert.equal(encHash, bytes32(0), "encHash not match");
     }
 
@@ -131,10 +128,8 @@ contract DecentServerCertMgr_testSuit {
         DecentServerCertMgr decentServerCertMgr =
             new DecentServerCertMgr(m_iasReportCertMgrAddr);
 
-        (uint8 recId, bytes32 encHash) =
-            decentServerCertMgr.isDecentServer(someAddr);
+        bytes32 encHash = decentServerCertMgr.isDecentServer(someAddr);
 
-        Assert.equal(recId, 255, "recId not match");
         Assert.equal(encHash, bytes32(0), "encHash not match");
     }
 

@@ -389,7 +389,8 @@ library TestCerts {
     address constant DECENT_SVR_CERT_KEY_ADDR =
         0xd11169Fe26A678dFb634C67aC85C05ccd796dAEd;
 
-    uint8 constant DECENT_SVR_CERT_KEY_V = 28;
+    bytes32 constant DECENT_SVR_CERT_HASH =
+        0x732f273ebc132ab780f30ad1592dad9c50eeab9c2d7a677cf2f076d32b67f71f;
 
     bytes32 constant DECENT_SVR_CERT_SIGN_R =
         hex"4bc3cbb7afb2c51764d6df5b7082301238b41046f771890eb4bbc3a889d9f126";
@@ -590,7 +591,8 @@ library TestCerts {
     address constant DECENT_APP_CERT_KEY_ADDR =
         0xadfbC2b19F22F1FD30e48Ed1522F922E545251Ed;
 
-    uint8 constant DECENT_APP_CERT_KEY_V = 28;
+    bytes32 constant DECENT_APP_CERT_HASH =
+        0x43c4bb5ebe59f2bfa5d1d90cb04f49c2d814f2be48a00055c014fefccf9de381;
 
     bytes32 constant DECENT_APP_CERT_ENCL_HASH =
         hex"5532d882483041aa6ae90951de2d38b1dbc2a37a9c5f1c0f208be14f4480020d";
