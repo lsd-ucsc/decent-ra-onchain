@@ -8,6 +8,7 @@
 ###
 
 
+import argparse
 import base64
 import logging
 import os
@@ -16,8 +17,6 @@ import subprocess
 import sys
 import time
 
-from cryptography import x509
-from cryptography.hazmat.primitives.serialization import Encoding
 from web3 import Web3
 
 
@@ -54,28 +53,6 @@ def StartGanache() -> subprocess.Popen:
 	return proc
 
 
-def LoadIASRootCertDer() -> bytes:
-	with open(os.path.join(CERTS_DIR, 'CertIASRoot.pem'), 'r') as f:
-		certPem = f.read()
-
-	# PEM to DER
-	cert = x509.load_pem_x509_certificate(certPem.encode('utf-8'))
-	der = cert.public_bytes(encoding=Encoding.DER)
-
-	return der
-
-
-def LoadIASReportCertDer() -> bytes:
-	with open(os.path.join(CERTS_DIR, 'CertIASReport.pem'), 'r') as f:
-		certPem = f.read()
-
-	# PEM to DER
-	cert = x509.load_pem_x509_certificate(certPem.encode('utf-8'))
-	der = cert.public_bytes(encoding=Encoding.DER)
-
-	return der
-
-
 def _PemToDerCert(certPem: str) -> bytes:
 	# PEM to DER
 	certPem = certPem.strip()
@@ -87,6 +64,20 @@ def _PemToDerCert(certPem: str) -> bytes:
 	der = base64.b64decode(certPem)
 
 	return der
+
+
+def LoadIASRootCertDer() -> bytes:
+	with open(os.path.join(CERTS_DIR, 'CertIASRoot.pem'), 'r') as f:
+		certPem = f.read()
+
+	return _PemToDerCert(certPem)
+
+
+def LoadIASReportCertDer() -> bytes:
+	with open(os.path.join(CERTS_DIR, 'CertIASReport.pem'), 'r') as f:
+		certPem = f.read()
+
+	return _PemToDerCert(certPem)
 
 
 def LoadDecentServerCertDer() -> bytes:
@@ -103,7 +94,7 @@ def LoadDecentAppCertDer() -> bytes:
 	return _PemToDerCert(certPem)
 
 
-def RunTests() -> None:
+def RunTests_VerifyIndividually() -> None:
 	# connect to ganache
 	ganacheUrl = 'http://localhost:{}'.format(GANACHE_PORT)
 	w3 = Web3(Web3.HTTPProvider(ganacheUrl))
@@ -280,6 +271,141 @@ def RunTests() -> None:
 	print()
 
 
+def RunTests_VerifyAllOnce() -> None:
+	# connect to ganache
+	ganacheUrl = 'http://localhost:{}'.format(GANACHE_PORT)
+	w3 = Web3(Web3.HTTPProvider(ganacheUrl))
+	while not w3.is_connected():
+		print('Attempting to connect to ganache...')
+		time.sleep(1)
+	print('Connected to ganache')
+
+	# checksum keys
+	GanacheAccounts.ChecksumGanacheKeysFile(
+		CHECKSUM_KEYS_PATH,
+		GANACHE_KEYS_PATH
+	)
+
+	# setup account
+	privKey = EthContractHelper.SetupSendingAccount(
+		w3=w3,
+		account=0, # use account 0
+		keyJson=CHECKSUM_KEYS_PATH
+	)
+
+	# deploy IASRootCertMgr contract
+	print('Deploying IASRootCertMgr contract...')
+	iasRootContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='IASRootCertMgr',
+		release=None, # use locally built contract
+		address=None, # deploy new contract
+	)
+	iasRootReceipt = EthContractHelper.DeployContract(
+		w3=w3,
+		contract=iasRootContract,
+		arguments=[ LoadIASRootCertDer() ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	iasRootAddr = iasRootReceipt.contractAddress
+	print('IASRootCertMgr contract deployed at {}'.format(iasRootAddr))
+	print()
+
+	# deploy IASReportCertMgr contract
+	print('Deploying IASReportCertMgr contract...')
+	iasReportContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='IASReportCertMgr',
+		release=None, # use locally built contract
+		address=None, # deploy new contract
+	)
+	iasReportReceipt = EthContractHelper.DeployContract(
+		w3=w3,
+		contract=iasReportContract,
+		arguments=[ iasRootAddr ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	iasReportAddr = iasReportReceipt.contractAddress
+	print('IASReportCertMgr contract deployed at {}'.format(iasReportAddr))
+	print()
+
+	# deploy DecentServerCertMgr contract
+	print('Deploying DecentServerCertMgr contract...')
+	decentSvrContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='DecentServerCertMgr',
+		release=None, # use locally built contract
+		address=None, # deploy new contract
+	)
+	decentSvrReceipt = EthContractHelper.DeployContract(
+		w3=w3,
+		contract=decentSvrContract,
+		arguments=[ iasReportAddr ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	decentSvrAddr = decentSvrReceipt.contractAddress
+	print('DecentServerCertMgr contract deployed at {}'.format(decentSvrAddr))
+	print()
+
+	# deploy HelloWorldApp contract
+	print('Deploying HelloWorldApp contract...')
+	decentAppContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='HelloWorldApp',
+		release=None, # use locally built contract
+		address=None, # deploy new contract
+	)
+	decentAppReceipt = EthContractHelper.DeployContract(
+		w3=w3,
+		contract=decentAppContract,
+		arguments=[ decentSvrAddr ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	decentAppAddr = decentAppReceipt.contractAddress
+	print('HelloWorldApp contract deployed at {}'.format(decentAppAddr))
+	decentAppContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='HelloWorldApp',
+		release=None, # use locally built contract
+		address=decentAppAddr
+	)
+	print()
+
+	# verify Decent certificate chain
+	print('Verifying Decent App certificate...')
+	EthContractHelper.CallContractFunc(
+		w3=w3,
+		contract=decentAppContract,
+		funcName='verifyCertChain',
+		arguments=[
+			LoadDecentServerCertDer(),
+			LoadDecentAppCertDer()
+		],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	print()
+
+
 def StopGanache(ganacheProc: subprocess.Popen) -> None:
 	print('Shutting down ganache (it may take ~15 seconds)...')
 	waitEnd = time.time() + 20
@@ -299,6 +425,23 @@ def StopGanache(ganacheProc: subprocess.Popen) -> None:
 
 
 def main():
+	argParser = argparse.ArgumentParser(
+		description='Deploy contracts and run tests'
+	)
+	modParser = argParser.add_subparsers(
+		dest='testMode',
+		help='Test mode',
+		required=True
+	)
+	modParser.add_parser(
+		'indiv',
+		help='Verify certificates individually'
+	)
+	modParser.add_parser(
+		'all',
+		help='Verify certificates all at once'
+	)
+	args = argParser.parse_args()
 
 	# logging configuration
 	loggingFormat = '%(asctime)s %(levelname)s %(message)s'
@@ -308,7 +451,12 @@ def main():
 	ganacheProc = StartGanache()
 
 	try:
-		RunTests()
+		if args.testMode == 'indiv':
+			RunTests_VerifyIndividually()
+		elif args.testMode == 'all':
+			RunTests_VerifyAllOnce()
+		else:
+			raise RuntimeError('Unexpected test mode: {}'.format(args.testMode))
 	finally:
 		# finish and exit
 		StopGanache(ganacheProc)

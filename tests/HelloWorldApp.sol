@@ -3,6 +3,7 @@ pragma solidity ^0.8.17;
 
 
 import {DecentAppCert} from "../contracts/DecentAppCert.sol";
+import {DecentCertChain} from "../contracts/DecentCertChain.sol";
 import {
     Interface_DecentServerCertMgr
 } from "../contracts/Interface_DecentServerCertMgr.sol";
@@ -31,6 +32,20 @@ contract HelloWorldApp {
     ) external {
         DecentAppCert.DecentApp memory appCert;
         appCert.loadCert(certDer, m_decentSvrMgr, decentSvrKeyAddr);
+        m_appCert = appCert;
+    }
+
+    function verifyCertChain(
+        bytes memory svrCertDer,
+        bytes memory appCertDer
+    ) external {
+        DecentAppCert.DecentApp memory appCert;
+        DecentCertChain.verifyCertChain(
+            appCert,
+            m_decentSvrMgr,
+            svrCertDer,
+            appCertDer
+        );
         m_appCert = appCert;
     }
 
