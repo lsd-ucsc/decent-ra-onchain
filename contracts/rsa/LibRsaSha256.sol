@@ -3,8 +3,8 @@ pragma solidity >=0.8.0 <0.9.0;
 
 
 import {Asn1Decode} from "../asn1-decode/Asn1Decode.sol";
-import {RSAVerify} from "../ens-contracts/RSAVerify.sol";
 import {BytesUtils} from "../ens-contracts/BytesUtils.sol";
+import {RSAVerify} from "../ens-contracts/RSAVerify.sol";
 
 
 library LibRsaSha256 {
