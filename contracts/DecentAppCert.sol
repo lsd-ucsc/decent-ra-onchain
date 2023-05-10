@@ -4,6 +4,9 @@ pragma solidity ^0.8.17;
 
 import {Asn1Decode} from "./asn1-decode/Asn1Decode.sol";
 import {BytesUtils} from "./ens-contracts/BytesUtils.sol";
+import {
+    Interface_DecentServerCertMgr
+} from "../contracts/Interface_DecentServerCertMgr.sol";
 import {LibSecp256k1Sha256} from "./LibSecp256k1Sha256.sol";
 import {OIDs} from "./Constants.sol";
 import {X509CertNodes} from "./X509CertNodes.sol";
@@ -126,8 +129,8 @@ library DecentAppCert {
     }
 
     /**
-     * read and verify Decent App Certificate, and thn load infos into DecentApp
-     * struct
+     * read and verify Decent App Certificate, and then load infos into
+     * DecentApp struct
      * @param self DecentApp struct NOTE: the issuerKeyAddr
      *             field must be set before calling this function
      * @param appCertDer Decent App Certificate in DER format
@@ -158,6 +161,36 @@ library DecentAppCert {
         extractDecentAppKey(self, appCertDer, certNodes);
 
         extractAppCertExtensions(self, appCertDer, certNodes);
+    }
+
+    /**
+     * read and verify Decent App Certificate, and then load infos into
+     * DecentApp struct
+     * This function will check if the issuer is a valid Decent Server
+     * and populate the issuerKeyAddr field
+     * @param self DecentApp struct
+     * @param appCertDer Decent App Certificate in DER format
+     * @param decentSvrCertMgr DecentServerCertMgr contract address
+     * @param issuerKeyAddr issuer key address
+     */
+    function loadCert(
+        DecentApp memory self,
+        bytes memory appCertDer,
+        address decentSvrCertMgr,
+        address issuerKeyAddr
+    )
+        internal
+        view
+    {
+        require(
+            Interface_DecentServerCertMgr(
+                decentSvrCertMgr
+            ).isDecentServer(issuerKeyAddr) != bytes32(0),
+            "Invalid issuer"
+        );
+
+        self.issuerKeyAddr = issuerKeyAddr;
+        loadCert(self, appCertDer);
     }
 
 }

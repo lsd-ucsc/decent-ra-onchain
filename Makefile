@@ -1,7 +1,8 @@
 NODEENV_CONFIG := ./utils/nodeenv.ini
 NODEENV_REQ    := ./utils/nodeenv-requirements.txt
 MODULES        := \
-	contracts
+	contracts \
+	tests
 
 
 all: build/nodeenv.state $(MODULES)

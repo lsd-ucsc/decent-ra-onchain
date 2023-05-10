@@ -68,4 +68,24 @@ contract DecentAppCert_testSuit {
         }
     }
 
+    function loadCertWithAddrTest() public {
+        try DecentAppCert_proxy(m_testProxyAddr).loadCertWithAddrTest() {
+            Assert.ok(true, "loadCertWithAddrTest should not throw");
+        } catch Error(string memory reason) {
+            Assert.ok(false, reason);
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, "unexpected error - loadCertWithAddrTest");
+        }
+    }
+
+    function loadCertWithWrongAddrTest() public {
+        try DecentAppCert_proxy(m_testProxyAddr).loadCertWithWrongAddrTest() {
+            Assert.ok(false, "loadCertWithWrongAddrTest should throw");
+        } catch Error(string memory reason) {
+            Assert.equal(reason, "Invalid issuer", reason);
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, "unexpected error - loadCertWithWrongAddrTest");
+        }
+    }
+
 }

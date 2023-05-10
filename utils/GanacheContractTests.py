@@ -76,10 +76,7 @@ def LoadIASReportCertDer() -> bytes:
 	return der
 
 
-def LoadDecentServerCertDer() -> bytes:
-	with open(os.path.join(CERTS_DIR, 'CertDecentServer.pem'), 'r') as f:
-		certPem = f.read()
-
+def _PemToDerCert(certPem: str) -> bytes:
 	# PEM to DER
 	certPem = certPem.strip()
 	certPem = certPem.removeprefix('-----BEGIN CERTIFICATE-----')
@@ -90,6 +87,20 @@ def LoadDecentServerCertDer() -> bytes:
 	der = base64.b64decode(certPem)
 
 	return der
+
+
+def LoadDecentServerCertDer() -> bytes:
+	with open(os.path.join(CERTS_DIR, 'CertDecentServer.pem'), 'r') as f:
+		certPem = f.read()
+
+	return _PemToDerCert(certPem)
+
+
+def LoadDecentAppCertDer() -> bytes:
+	with open(os.path.join(CERTS_DIR, 'CertDecentApp.pem'), 'r') as f:
+		certPem = f.read()
+
+	return _PemToDerCert(certPem)
 
 
 def RunTests() -> None:
@@ -215,6 +226,52 @@ def RunTests() -> None:
 		contract=decentSvrContract,
 		funcName='verifyCert',
 		arguments=[ LoadDecentServerCertDer() ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	print()
+
+	# deploy HelloWorldApp contract
+	print('Deploying HelloWorldApp contract...')
+	decentAppContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='HelloWorldApp',
+		release=None, # use locally built contract
+		address=None, # deploy new contract
+	)
+	decentAppReceipt = EthContractHelper.DeployContract(
+		w3=w3,
+		contract=decentAppContract,
+		arguments=[ decentSvrAddr ],
+		privKey=privKey,
+		gas=None, # let web3 estimate
+		value=0,
+		confirmPrompt=False # don't prompt for confirmation
+	)
+	decentAppAddr = decentAppReceipt.contractAddress
+	print('HelloWorldApp contract deployed at {}'.format(decentAppAddr))
+	decentAppContract = EthContractHelper.LoadContract(
+		w3=w3,
+		projConf=PROJECT_CONFIG_PATH,
+		contractName='HelloWorldApp',
+		release=None, # use locally built contract
+		address=decentAppAddr
+	)
+	print()
+
+	# verify Decent server certificate
+	print('Verifying Decent App certificate...')
+	EthContractHelper.CallContractFunc(
+		w3=w3,
+		contract=decentAppContract,
+		funcName='loadAppCert',
+		arguments=[
+			'0xd11169Fe26A678dFb634C67aC85C05ccd796dAEd',
+			LoadDecentAppCertDer()
+		],
 		privKey=privKey,
 		gas=None, # let web3 estimate
 		value=0,
