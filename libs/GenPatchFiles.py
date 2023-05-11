@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import requests
+import subprocess
 
 
 LIBS_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +31,7 @@ def _GenPatchForSingleFile(destFile: str, srcFile: str, verTag: str):
 	destBaseFile, ext = os.path.splitext(destFile)
 	tmpFile = destBaseFile + '.' + verTag + ext
 	patchFile = destBaseFile + '.patch'
+	destDir = os.path.dirname(destFile)
 	# print(tmpFile, '^', destFile, '->', patchFile)
 
 	if os.path.exists(patchFile):
@@ -55,7 +57,22 @@ def _GenPatchForSingleFile(destFile: str, srcFile: str, verTag: str):
 		hashlib.sha256(resp.content).digest()
 	):
 		# generate patch file if content is different
-		os.system('diff -u {} {} > {}'.format(tmpFile, destFile, patchFile))
+		proc = subprocess.Popen(
+			[
+				'diff',
+				'-u',
+				os.path.basename(tmpFile),
+				os.path.basename(destFile)
+			],
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE,
+			cwd=destDir,
+		)
+		stdout, stderr = proc.communicate()
+		# if proc.returncode != 0:
+		# 	raise RuntimeError('Failed to generate patch file: {}'.format(stderr))
+		with open(patchFile, 'wb') as f:
+			f.write(stdout)
 
 	# remove tmp file
 	os.remove(tmpFile)
