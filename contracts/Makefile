@@ -4,6 +4,7 @@ CONTRACTS   := \
 	IASReportCertMgr \
 	DecentServerCertMgr
 
+OPTIMIZE_RUN := 500
 CHECKSUM_BIN := openssl sha256
 
 
@@ -19,7 +20,7 @@ all:    $(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .abi,$(CONTRACTS))) \
 ../build/$(MODULE_NAME)/%.bin: %.sol ../build/nodeenv.state
 	( \
 		. ../build/nodeenv/bin/activate && \
-		solcjs  --optimize --optimize-runs 200 \
+		solcjs  --optimize --optimize-runs $(OPTIMIZE_RUN) \
 				--bin \
 				--include-path node_modules/ --base-path .. \
 				--output-dir ../build/$(MODULE_NAME)/ \
@@ -33,7 +34,7 @@ all:    $(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .abi,$(CONTRACTS))) \
 ../build/$(MODULE_NAME)/%.abi: %.sol ../build/nodeenv.state
 	( \
 		. ../build/nodeenv/bin/activate && \
-		solcjs  --optimize --optimize-runs 200 \
+		solcjs  --optimize --optimize-runs $(OPTIMIZE_RUN) \
 				--abi \
 				--include-path node_modules/ --base-path .. \
 				--output-dir ../build/$(MODULE_NAME)/ \
