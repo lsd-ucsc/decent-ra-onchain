@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 
-import {Asn1Decode, NodePtr} from "./asn1-decode/Asn1Decode.sol";
+import {Asn1Decode, NodePtr} from "../libs/asn1-decode/Asn1Decode.sol";
 
 
 library X509Extension {

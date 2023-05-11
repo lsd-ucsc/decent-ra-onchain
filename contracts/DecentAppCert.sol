@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 
-import {Asn1Decode} from "./asn1-decode/Asn1Decode.sol";
+import {Asn1Decode} from "../libs/asn1-decode/Asn1Decode.sol";
 import {BytesUtils} from "../libs/ens-contracts/BytesUtils.sol";
 import {
     Interface_DecentServerCertMgr

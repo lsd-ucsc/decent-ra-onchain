@@ -10,7 +10,7 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 
 
-import {Asn1Decode, NodePtr} from "../../contracts/asn1-decode/Asn1Decode.sol";
+import {Asn1Decode, NodePtr} from "../../libs/asn1-decode/Asn1Decode.sol";
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
 import {OIDs} from "../../contracts/Constants.sol";
 import {TestCerts} from "../TestCerts.sol";

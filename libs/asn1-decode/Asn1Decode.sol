@@ -122,21 +122,6 @@ library Asn1Decode {
     return der.substrstringFast(ptr.ixf(), ptr.ixl()+1 - ptr.ixf());
   }
 
-  /*
-   * @dev Extract value representing the raw public key bytes from DER-encoded structure
-   * @param der The der-encoded ASN1 structure
-   * @param ptr Points to the indices of the current node
-   * @return Value bytes of key
-   */
-  function pubKeyBytesAt(bytes memory der, uint ptr) internal pure returns (bytes memory) {
-    // +2 to skip the length
-    // return der.substring(ptr.ixf()+2, ptr.ixl()+1 - ptr.ixf());
-    // uint valueLength = ptr.ixl() - ptr.ixf();
-    // uint end = ptr.ixl()+1 - start;
-    return der.substring(ptr.ixf()+2, ptr.ixl() - ptr.ixf());
-    // return der.readBytesN(ptr.ixf()+2, uint(32));
-  }
-
 
   /*
    * @dev Extract entire node from DER-encoded structure
@@ -181,12 +166,10 @@ library Asn1Decode {
     require(der[ptr.ixs()] == 0x02, "Not type INTEGER");
     require(der[ptr.ixf()] & 0x80 == 0, "Not positive");
     uint valueLength = ptr.ixl()+1 - ptr.ixf();
-    if (der[ptr.ixf()] == 0)
-    {
+    if (der[ptr.ixf()] == 0) {
       return der.substring(ptr.ixf()+1, valueLength-1);
     }
-    else
-    {
+    else {
       return der.substring(ptr.ixf(), valueLength);
     }
   }
