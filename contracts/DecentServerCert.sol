@@ -9,7 +9,7 @@ import {IASReportCert} from "./IASReportCert.sol";
 import {Interface_IASReportCertMgr} from "./Interface_IASReportCertMgr.sol";
 import {LibSecp256k1Sha256} from "./LibSecp256k1Sha256.sol";
 import {OIDs} from "./Constants.sol";
-import {RLPReader} from "./rlp/RLPReader.sol";
+import {RLPReader} from "../libs/Solidity-RLP/contracts/RLPReader.sol";
 import {X509CertNodes} from "./X509CertNodes.sol";
 import {X509Extension} from "./X509Extension.sol";
 

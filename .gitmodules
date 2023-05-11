@@ -10,3 +10,7 @@
 	path = libs/base64
 	url = https://github.com/Brechtpd/base64.git
 	branch = main
+[submodule "libs/Solidity-RLP"]
+	path = libs/Solidity-RLP
+	url = https://github.com/hamdiallam/Solidity-RLP.git
+	branch = master
