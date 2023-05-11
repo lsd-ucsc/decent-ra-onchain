@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 
 import {Asn1Decode} from "../libs/asn1-decode/Asn1Decode.sol";
 import {OIDs, Names} from "./Constants.sol";
-import {LibRsaSha256} from "./rsa/LibRsaSha256.sol";
+import {LibRsaSha256} from "../libs/sig-verify-algs/LibRsaSha256.sol";
 import {X509CertNodes} from "./X509CertNodes.sol";
 import {X509Name} from "./X509Name.sol";
 

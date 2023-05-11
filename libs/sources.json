@@ -36,6 +36,16 @@
 				"commit": "5c2d1469fc678513753786acb441e597969192ec",
 				"path": "contracts/Asn1Decode.sol"
 			}
+		},
+
+		{
+			"file": "sig-verify-algs/LibRsaSha256.sol",
+			"src": {
+				"host": "github",
+				"repo": "JonahGroendal/sig-verify-algs",
+				"commit": "0f0cb83eb03075a4cf80cc0376f24ff3cc1c244f",
+				"path": "contracts/RsaSha256Algorithm.sol"
+			}
 		}
 	]
 }

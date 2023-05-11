@@ -5,7 +5,7 @@ pragma solidity >=0.4.17 <0.9.0;
 import "remix_tests.sol";
 
 
-import {LibRsaSha256} from "../../contracts/rsa/LibRsaSha256.sol";
+import {LibRsaSha256} from "../../libs/sig-verify-algs/LibRsaSha256.sol";
 import {TestCerts} from "../TestCerts.sol";
 
 
