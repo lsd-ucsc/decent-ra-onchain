@@ -10,8 +10,8 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 
 
-import {BytesUtils} from "../../contracts/ens-contracts/BytesUtils.sol";
-import {RSAVerify} from "../../contracts/ens-contracts/RSAVerify.sol";
+import {BytesUtils} from "../../libs/ens-contracts/BytesUtils.sol";
+import {RSAVerify} from "../../libs/ens-contracts/RSAVerify.sol";
 
 import {LibRsaSha256_proxy} from "./01_LibRsaSha256.sol";
 import {TestCerts} from "../TestCerts.sol";

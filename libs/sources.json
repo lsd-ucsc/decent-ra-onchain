@@ -1,0 +1,31 @@
+{
+	"fileSrc": [
+		{
+			"file": "ens-contracts/BytesUtils.sol",
+			"src": {
+				"host": "github",
+				"repo": "ensdomains/ens-contracts",
+				"commit": "883a0a2d64d07df54f3ebbb0e81cf2e9d012c14d",
+				"path": "contracts/dnssec-oracle/BytesUtils.sol"
+			}
+		},
+		{
+			"file": "ens-contracts/ModexpPrecompile.sol",
+			"src": {
+				"host": "github",
+				"repo": "ensdomains/ens-contracts",
+				"commit": "883a0a2d64d07df54f3ebbb0e81cf2e9d012c14d",
+				"path": "contracts/dnssec-oracle/algorithms/ModexpPrecompile.sol"
+			}
+		},
+		{
+			"file": "ens-contracts/RSAVerify.sol",
+			"src": {
+				"host": "github",
+				"repo": "ensdomains/ens-contracts",
+				"commit": "883a0a2d64d07df54f3ebbb0e81cf2e9d012c14d",
+				"path": "contracts/dnssec-oracle/algorithms/RSAVerify.sol"
+			}
+		}
+	]
+}

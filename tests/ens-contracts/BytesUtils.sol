@@ -5,7 +5,7 @@ pragma solidity >=0.4.17 <0.9.0;
 import "remix_tests.sol";
 
 
-import {BytesUtils} from "../../contracts/ens-contracts/BytesUtils.sol";
+import {BytesUtils} from "../../libs/ens-contracts/BytesUtils.sol";
 
 
 contract BytesUtils_proxy {

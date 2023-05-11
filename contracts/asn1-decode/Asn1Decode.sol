@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.2 <0.9.0;
 
-import {BytesUtils} from "../ens-contracts/BytesUtils.sol";
+import {BytesUtils} from "../../libs/ens-contracts/BytesUtils.sol";
 
 library NodePtr {
   // Unpack first byte index

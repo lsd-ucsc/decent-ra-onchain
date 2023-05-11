@@ -3,7 +3,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 
 import {Asn1Decode} from "./asn1-decode/Asn1Decode.sol";
-import {BytesUtils} from "./ens-contracts/BytesUtils.sol";
+import {BytesUtils} from "../libs/ens-contracts/BytesUtils.sol";
 import {X509CertNodes} from "./X509CertNodes.sol";
 
 

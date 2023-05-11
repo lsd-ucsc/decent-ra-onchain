@@ -5,7 +5,7 @@ pragma solidity >=0.4.17 <0.9.0;
 // This import is automatically injected by Remix
 import "remix_tests.sol";
 
-import {BytesUtils} from "../../contracts/ens-contracts/BytesUtils.sol";
+import {BytesUtils} from "../../libs/ens-contracts/BytesUtils.sol";
 import {OIDs} from "../../contracts/Constants.sol";
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
 import {DecentServerCert} from "../../contracts/DecentServerCert.sol";
