@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 
 import {Asn1Decode} from "../libs/asn1-decode/Asn1Decode.sol";
-import {Base64} from "./base64/Base64.sol";
+import {Base64} from "../libs/base64/base64.sol";
 import {BytesUtils} from "../libs/ens-contracts/BytesUtils.sol";
 import {IASReportCert} from "./IASReportCert.sol";
 import {Interface_IASReportCertMgr} from "./Interface_IASReportCertMgr.sol";

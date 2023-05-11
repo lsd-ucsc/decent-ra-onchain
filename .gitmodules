@@ -6,3 +6,7 @@
 	path = utils/PyEthHelper
 	url = https://github.com/lsd-ucsc/PyEthHelper.git
 	branch = main
+[submodule "libs/base64"]
+	path = libs/base64
+	url = https://github.com/Brechtpd/base64.git
+	branch = main
