@@ -10,11 +10,11 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 
 
-import {DecentAppCert_proxy} from "./01_DecentAppCert.sol";
+import {DecentAppCertBasics_proxy} from "./01_DecentAppCertBasics.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts
-contract DecentAppCert_testSuit {
+contract DecentAppCertBasics_testSuit {
 
     //===== member variables =====
 
@@ -25,11 +25,11 @@ contract DecentAppCert_testSuit {
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeAll() public {
-        m_testProxyAddr = address(new DecentAppCert_proxy());
+        m_testProxyAddr = address(new DecentAppCertBasics_proxy());
     }
 
     function extractDecentAppKeyTest() public {
-        try DecentAppCert_proxy(m_testProxyAddr).extractDecentAppKeyTest() {
+        try DecentAppCertBasics_proxy(m_testProxyAddr).extractDecentAppKeyTest() {
             Assert.ok(true, "extractDecentAppKeyTest should not throw");
         } catch Error(string memory reason) {
             Assert.ok(false, reason);
@@ -39,7 +39,7 @@ contract DecentAppCert_testSuit {
     }
 
     function verifyAppCertSignTest() public {
-        try DecentAppCert_proxy(m_testProxyAddr).verifyAppCertSignTest() {
+        try DecentAppCertBasics_proxy(m_testProxyAddr).verifyAppCertSignTest() {
             Assert.ok(true, "verifyAppCertSignTest should not throw");
         } catch Error(string memory reason) {
             Assert.ok(false, reason);
@@ -49,7 +49,7 @@ contract DecentAppCert_testSuit {
     }
 
     function extractAppCertExtensionsTest() public {
-        try DecentAppCert_proxy(m_testProxyAddr).extractAppCertExtensionsTest() {
+        try DecentAppCertBasics_proxy(m_testProxyAddr).extractAppCertExtensionsTest() {
             Assert.ok(true, "extractAppCertExtensionsTest should not throw");
         } catch Error(string memory reason) {
             Assert.ok(false, reason);
@@ -59,32 +59,12 @@ contract DecentAppCert_testSuit {
     }
 
     function loadCertTest() public {
-        try DecentAppCert_proxy(m_testProxyAddr).loadCertTest() {
+        try DecentAppCertBasics_proxy(m_testProxyAddr).loadCertTest() {
             Assert.ok(true, "loadCertTest should not throw");
         } catch Error(string memory reason) {
             Assert.ok(false, reason);
         } catch (bytes memory /*lowLevelData*/) {
             Assert.ok(false, "unexpected error - loadCertTest");
-        }
-    }
-
-    function loadCertWithAddrTest() public {
-        try DecentAppCert_proxy(m_testProxyAddr).loadCertWithAddrTest() {
-            Assert.ok(true, "loadCertWithAddrTest should not throw");
-        } catch Error(string memory reason) {
-            Assert.ok(false, reason);
-        } catch (bytes memory /*lowLevelData*/) {
-            Assert.ok(false, "unexpected error - loadCertWithAddrTest");
-        }
-    }
-
-    function loadCertWithWrongAddrTest() public {
-        try DecentAppCert_proxy(m_testProxyAddr).loadCertWithWrongAddrTest() {
-            Assert.ok(false, "loadCertWithWrongAddrTest should throw");
-        } catch Error(string memory reason) {
-            Assert.equal(reason, "Invalid issuer", reason);
-        } catch (bytes memory /*lowLevelData*/) {
-            Assert.ok(false, "unexpected error - loadCertWithWrongAddrTest");
         }
     }
 

@@ -12,9 +12,9 @@ import "remix_accounts.sol";
 
 import {DecentAppCert} from "../../contracts/DecentAppCert.sol";
 import {DecentCertChain} from "../../contracts/DecentCertChain.sol";
-import {DecentServerCertMgr} from "../../contracts/DecentServerCertMgr.sol";
-import {IASReportCertMgr} from "../../contracts/IASReportCertMgr.sol";
-import {IASRootCertMgr} from "../../contracts/IASRootCertMgr.sol";
+// import {DecentServerCertMgr} from "../../contracts/DecentServerCertMgr.sol";
+// import {IASReportCertMgr} from "../../contracts/IASReportCertMgr.sol";
+// import {IASRootCertMgr} from "../../contracts/IASRootCertMgr.sol";
 
 import {TestCerts} from "../TestCerts.sol";
 
@@ -24,8 +24,6 @@ contract DecentCertChain_testSuit {
 
     //===== member variables =====
 
-    address m_iasRootCertMgrAddr;
-    address m_iasReportCertMgrAddr;
     address m_decentSvrCertMgrAddr;
 
     //===== functions =====
@@ -33,16 +31,13 @@ contract DecentCertChain_testSuit {
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeAll() public {
-        m_iasRootCertMgrAddr =
-            address(new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER));
-
-        IASReportCertMgr reportCertMgr =
-            new IASReportCertMgr(m_iasRootCertMgrAddr);
-        m_iasReportCertMgrAddr = address(reportCertMgr);
-
-        DecentServerCertMgr decentSvrCertMgr =
-            new DecentServerCertMgr(m_iasReportCertMgrAddr);
-        m_decentSvrCertMgrAddr = address(decentSvrCertMgr);
+        m_decentSvrCertMgrAddr =
+            // address(new DecentServerCertMgr(
+            //     address(new IASReportCertMgr(
+            //         address(new IASRootCertMgr(TestCerts.IAS_ROOT_CERT_DER))
+            //     ))
+            // ));
+            0xaa96CB8107828e584C4FbC37a41754333DfFD206;
     }
 
     function verifyCertChainTest() public {
