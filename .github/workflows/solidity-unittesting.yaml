@@ -67,7 +67,31 @@ jobs:
     - name: Run Solidity Unit Testing for Decent Tests
       uses: EthereumRemix/sol-test@v1.1
       with:
-        test-path: 'tests/Decent'
+        test-path: 'tests/DecentCommon'
+        compiler-version: ${{ matrix.solc-version }}
+        optimize: true
+        optimizer-runs: 500
+
+    - name: Run Solidity Unit Testing for Decent Tests
+      uses: EthereumRemix/sol-test@v1.1
+      with:
+        test-path: 'tests/DecentIAS'
+        compiler-version: ${{ matrix.solc-version }}
+        optimize: true
+        optimizer-runs: 500
+
+    - name: Run Solidity Unit Testing for Decent Tests
+      uses: EthereumRemix/sol-test@v1.1
+      with:
+        test-path: 'tests/DecentServer'
+        compiler-version: ${{ matrix.solc-version }}
+        optimize: true
+        optimizer-runs: 500
+
+    - name: Run Solidity Unit Testing for Decent Tests
+      uses: EthereumRemix/sol-test@v1.1
+      with:
+        test-path: 'tests/DecentApp'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
