@@ -10,7 +10,7 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 
 
-import {DecentAppCert_proxy} from "./11_DecentAppCert.sol";
+import {DecentAppCert_proxy} from "./01_DecentAppCert.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts

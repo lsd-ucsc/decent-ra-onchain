@@ -64,7 +64,7 @@ jobs:
         optimize: true
         optimizer-runs: 500
 
-    - name: Run Solidity Unit Testing for Decent Tests
+    - name: Run Solidity Unit Testing for Decent Common Tests
       uses: EthereumRemix/sol-test@v1.1
       with:
         test-path: 'tests/DecentCommon'
@@ -72,7 +72,7 @@ jobs:
         optimize: true
         optimizer-runs: 500
 
-    - name: Run Solidity Unit Testing for Decent Tests
+    - name: Run Solidity Unit Testing for Decent IAS Tests
       uses: EthereumRemix/sol-test@v1.1
       with:
         test-path: 'tests/DecentIAS'
@@ -80,7 +80,7 @@ jobs:
         optimize: true
         optimizer-runs: 500
 
-    - name: Run Solidity Unit Testing for Decent Tests
+    - name: Run Solidity Unit Testing for Decent Server Tests
       uses: EthereumRemix/sol-test@v1.1
       with:
         test-path: 'tests/DecentServer'
@@ -88,7 +88,7 @@ jobs:
         optimize: true
         optimizer-runs: 500
 
-    - name: Run Solidity Unit Testing for Decent Tests
+    - name: Run Solidity Unit Testing for Decent App Tests
       uses: EthereumRemix/sol-test@v1.1
       with:
         test-path: 'tests/DecentApp'

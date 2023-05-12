@@ -14,7 +14,7 @@ import {IASReportCertMgr} from "../../contracts/IASReportCertMgr.sol";
 import {IASRootCertMgr} from "../../contracts/IASRootCertMgr.sol";
 
 import {TestCerts} from "../TestCerts.sol";
-import {DecentServerCert_proxy} from "./09_DecentServerCert.sol";
+import {DecentServerCert_proxy} from "./01_DecentServerCert.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts

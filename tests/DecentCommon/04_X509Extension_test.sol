@@ -11,7 +11,7 @@ import "remix_accounts.sol";
 
 
 import {X509Extension} from "../../contracts/X509Extension.sol";
-import {X509Extension_proxy} from "./08_X509Extension.sol";
+import {X509Extension_proxy} from "./04_X509Extension.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts

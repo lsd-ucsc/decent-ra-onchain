@@ -14,7 +14,7 @@ import {IASReportCert} from "../../contracts/IASReportCert.sol";
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
 
 import {TestCerts} from "../TestCerts.sol";
-import {IASReportCert_proxy} from "./06_IASReportCert.sol";
+import {IASReportCert_proxy} from "./03_IASReportCert.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts
