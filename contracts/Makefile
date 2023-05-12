@@ -4,49 +4,54 @@ CONTRACTS   := \
 	IASReportCertMgr \
 	DecentServerCertMgr
 
+MKFILE_PATH  := $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_DIR  := $(dir $(MKFILE_PATH))
+SOLC_BIN     := $(CURRENT_DIR)/../build/solc-static-linux
 OPTIMIZE_RUN := 500
 CHECKSUM_BIN := openssl sha256
 
 
-all:    $(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .abi,$(CONTRACTS))) \
-		$(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .bin,$(CONTRACTS))) \
-		$(addprefix ../build/$(MODULE_NAME)/,checksums.txt)
+all: $(CONTRACTS) checksums
 
 
-../build/nodeenv.state:
-	$(MAKE) -C .. build/nodeenv.state
+$(SOLC_BIN):
+	$(MAKE) -C .. solc_bin
 
 
-../build/$(MODULE_NAME)/%.bin: %.sol ../build/nodeenv.state
+../build/$(MODULE_NAME)/%.bin: %.sol $(SOLC_BIN)
 	( \
-		. ../build/nodeenv/bin/activate && \
-		solcjs  --optimize --optimize-runs $(OPTIMIZE_RUN) \
-				--bin \
-				--include-path node_modules/ --base-path .. \
-				--output-dir ../build/$(MODULE_NAME)/ \
-				$< && \
-		mv  ../build/$(MODULE_NAME)/$(MODULE_NAME)_$(basename $<)_sol_$(basename $<).bin \
-			../build/$(MODULE_NAME)/$(basename $<).bin && \
-		rm  -f ../build/$(MODULE_NAME)/*_sol_*.bin \
+		$(SOLC_BIN) --optimize --optimize-runs $(OPTIMIZE_RUN) \
+					--revert-strings strip \
+					--via-ir \
+					--overwrite \
+					--bin \
+					--include-path node_modules/ --base-path .. \
+					--output-dir ../build/$(MODULE_NAME)/all/ \
+					$< && \
+		cp  ../build/$(MODULE_NAME)/all/$(basename $<).bin \
+			../build/$(MODULE_NAME)/$(basename $<).bin \
 	)
 
 
-../build/$(MODULE_NAME)/%.abi: %.sol ../build/nodeenv.state
+../build/$(MODULE_NAME)/%.abi: %.sol $(SOLC_BIN)
 	( \
-		. ../build/nodeenv/bin/activate && \
-		solcjs  --optimize --optimize-runs $(OPTIMIZE_RUN) \
-				--abi \
-				--include-path node_modules/ --base-path .. \
-				--output-dir ../build/$(MODULE_NAME)/ \
-				$< && \
-		mv  ../build/$(MODULE_NAME)/$(MODULE_NAME)_$(basename $<)_sol_$(basename $<).abi \
-			../build/$(MODULE_NAME)/$(basename $<).abi && \
-		rm  -f ../build/$(MODULE_NAME)/*_sol_*.abi \
+		$(SOLC_BIN) --optimize --optimize-runs $(OPTIMIZE_RUN) \
+					--revert-strings strip \
+					--via-ir \
+					--overwrite \
+					--abi \
+					--include-path node_modules/ --base-path .. \
+					--output-dir ../build/$(MODULE_NAME)/all/ \
+					$< && \
+		cp  ../build/$(MODULE_NAME)/all/$(basename $<).abi \
+			../build/$(MODULE_NAME)/$(basename $<).abi \
 	)
 
 
-../build/$(MODULE_NAME)/checksums.txt:  $(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .abi,$(CONTRACTS))) \
-										$(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .bin,$(CONTRACTS)))
+$(CONTRACTS): %: ../build/$(MODULE_NAME)/%.abi ../build/$(MODULE_NAME)/%.bin
+
+
+../build/$(MODULE_NAME)/checksums.txt: $(CONTRACTS)
 	( \
 		cd ../build/$(MODULE_NAME); \
 		$(CHECKSUM_BIN) $(addsuffix .abi,$(CONTRACTS)) $(addsuffix .bin,$(CONTRACTS)) > checksums.txt; \
@@ -57,9 +62,7 @@ checksums: ../build/$(MODULE_NAME)/checksums.txt
 
 
 clean:
-	rm -f   $(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .abi,$(CONTRACTS))) \
-			$(addprefix ../build/$(MODULE_NAME)/,$(addsuffix .bin,$(CONTRACTS))) \
-			$(addprefix ../build/$(MODULE_NAME)/,checksums.txt)
+	rm -rf ../build/$(MODULE_NAME)/
 
 
-.PHONY: all clean checksums
+.PHONY: all clean checksums $(CONTRACTS)
