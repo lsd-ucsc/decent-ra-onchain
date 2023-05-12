@@ -14,7 +14,8 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-22.04 ]
-        solc-version: [ 0.8.19 ]
+        solc-version: [ 0.8.20 ]
+        chain-fork: [ shanghai ]
 
     name: A job to run solidity unit tests on github actions CI
     steps:
@@ -31,6 +32,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for RSA Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -39,6 +41,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for ECDSA Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -47,6 +50,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for RLP Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -55,6 +59,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for x509-forest-of-trust Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -63,6 +68,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent Common Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -71,6 +77,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent IAS Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -79,6 +86,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent Server Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -87,6 +95,7 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent App Tests
       uses: EthereumRemix/sol-test@v1.1
@@ -95,3 +104,4 @@ jobs:
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
         optimizer-runs: 500
+        hard-fork: ${{ matrix.chain-fork }}
