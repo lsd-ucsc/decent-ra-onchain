@@ -16,6 +16,7 @@ jobs:
         os: [ ubuntu-22.04 ]
         solc-version: [ 0.8.20 ]
         chain-fork: [ shanghai ]
+        opt-runs: [ 200 ]
 
     name: A job to run solidity unit tests on github actions CI
     steps:
@@ -31,7 +32,7 @@ jobs:
         test-path: 'tests/ens-contracts'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for RSA Tests
@@ -40,7 +41,7 @@ jobs:
         test-path: 'tests/RSA'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for ECDSA Tests
@@ -49,7 +50,7 @@ jobs:
         test-path: 'tests/Ecdsa'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for RLP Tests
@@ -58,7 +59,7 @@ jobs:
         test-path: 'tests/RLP'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for x509-forest-of-trust Tests
@@ -67,7 +68,7 @@ jobs:
         test-path: 'tests/x509-forest-of-trust'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent Common Tests
@@ -76,7 +77,7 @@ jobs:
         test-path: 'tests/DecentCommon'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent IAS Tests
@@ -85,7 +86,7 @@ jobs:
         test-path: 'tests/DecentIAS'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent Server Tests
@@ -94,7 +95,7 @@ jobs:
         test-path: 'tests/DecentServer'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}
 
     - name: Run Solidity Unit Testing for Decent App Tests
@@ -103,5 +104,5 @@ jobs:
         test-path: 'tests/DecentApp'
         compiler-version: ${{ matrix.solc-version }}
         optimize: true
-        optimizer-runs: 500
+        optimizer-runs: ${{ matrix.opt-runs }}
         hard-fork: ${{ matrix.chain-fork }}

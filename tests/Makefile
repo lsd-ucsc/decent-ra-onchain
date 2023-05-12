@@ -4,8 +4,18 @@ CONTRACTS   := \
 
 MKFILE_PATH  := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR  := $(dir $(MKFILE_PATH))
-SOLC_BIN     := $(CURRENT_DIR)/../build/solc-static-linux
-OPTIMIZE_RUN := 500
+ROOT_DIR     := $(CURRENT_DIR)/..
+BUILD_DIR    := $(ROOT_DIR)/build
+
+SOLC_BIN     := $(BUILD_DIR)/solc-static-linux
+OPTIMIZE_RUN := 200
+SOLC_FLAGS   := --optimize --optimize-runs $(OPTIMIZE_RUN) \
+				--revert-strings strip \
+				--via-ir \
+				--overwrite \
+				--base-path $(ROOT_DIR) \
+				--output-dir $(BUILD_DIR)/$(MODULE_NAME)/all/
+
 CHECKSUM_BIN := openssl sha256
 
 
@@ -16,51 +26,37 @@ $(SOLC_BIN):
 	$(MAKE) -C .. solc_bin
 
 
-../build/$(MODULE_NAME)/%.bin: %.sol $(SOLC_BIN)
+$(BUILD_DIR)/$(MODULE_NAME)/%.bin: %.sol $(SOLC_BIN)
 	( \
-		$(SOLC_BIN) --optimize --optimize-runs $(OPTIMIZE_RUN) \
-					--revert-strings strip \
-					--via-ir \
-					--overwrite \
-					--bin \
-					--include-path node_modules/ --base-path .. \
-					--output-dir ../build/$(MODULE_NAME)/all/ \
-					$< && \
-		cp  ../build/$(MODULE_NAME)/all/$(basename $<).bin \
-			../build/$(MODULE_NAME)/$(basename $<).bin \
+		$(SOLC_BIN) --bin $(SOLC_FLAGS) $< && \
+		cp  $(BUILD_DIR)/$(MODULE_NAME)/all/$(basename $<).bin \
+			$(BUILD_DIR)/$(MODULE_NAME)/$(basename $<).bin \
 	)
 
 
-../build/$(MODULE_NAME)/%.abi: %.sol $(SOLC_BIN)
+$(BUILD_DIR)/$(MODULE_NAME)/%.abi: %.sol $(SOLC_BIN)
 	( \
-		$(SOLC_BIN) --optimize --optimize-runs $(OPTIMIZE_RUN) \
-					--revert-strings strip \
-					--via-ir \
-					--overwrite \
-					--abi \
-					--include-path node_modules/ --base-path .. \
-					--output-dir ../build/$(MODULE_NAME)/all/ \
-					$< && \
-		cp  ../build/$(MODULE_NAME)/all/$(basename $<).abi \
-			../build/$(MODULE_NAME)/$(basename $<).abi \
+		$(SOLC_BIN) --abi $(SOLC_FLAGS) $< && \
+		cp  $(BUILD_DIR)/$(MODULE_NAME)/all/$(basename $<).abi \
+			$(BUILD_DIR)/$(MODULE_NAME)/$(basename $<).abi \
 	)
 
 
-$(CONTRACTS): %: ../build/$(MODULE_NAME)/%.abi ../build/$(MODULE_NAME)/%.bin
+$(CONTRACTS): %: $(BUILD_DIR)/$(MODULE_NAME)/%.abi $(BUILD_DIR)/$(MODULE_NAME)/%.bin
 
 
-../build/$(MODULE_NAME)/checksums.txt: $(CONTRACTS)
+$(BUILD_DIR)/$(MODULE_NAME)/checksums.txt: $(CONTRACTS)
 	( \
-		cd ../build/$(MODULE_NAME); \
+		cd $(BUILD_DIR)/$(MODULE_NAME); \
 		$(CHECKSUM_BIN) $(addsuffix .abi,$(CONTRACTS)) $(addsuffix .bin,$(CONTRACTS)) > checksums.txt; \
 	)
 
 
-checksums: ../build/$(MODULE_NAME)/checksums.txt
+checksums: $(BUILD_DIR)/$(MODULE_NAME)/checksums.txt
 
 
 clean:
-	rm -rf ../build/$(MODULE_NAME)/
+	rm -rf $(BUILD_DIR)/$(MODULE_NAME)/
 
 
 .PHONY: all clean checksums $(CONTRACTS)
