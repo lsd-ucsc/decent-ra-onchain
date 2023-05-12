@@ -11,8 +11,11 @@ import "remix_accounts.sol";
 
 
 import {Asn1Decode, NodePtr} from "../../libs/asn1-decode/Asn1Decode.sol";
+
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
+import {X509Timestamp} from "../../contracts/X509Timestamp.sol";
 import {OIDs} from "../../contracts/Constants.sol";
+
 import {TestCerts} from "../TestCerts.sol";
 import {X509CertNodes_utils} from "./02_X509CertNodes.sol";
 
@@ -22,6 +25,7 @@ contract X509CertNodes_testSuit {
     using Asn1Decode for bytes;
     using X509CertNodes for X509CertNodes.CertTbsNodesObj;
     using X509CertNodes for X509CertNodes.CertNodesObj;
+    using X509Timestamp for X509CertNodes.CertTbsNodesObj;
 
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'

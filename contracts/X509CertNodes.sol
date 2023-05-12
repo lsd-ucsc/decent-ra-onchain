@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 
 import {Asn1Decode, NodePtr} from "../libs/asn1-decode/Asn1Decode.sol";
-import {X509Parser} from "../libs/x509-forest-of-trust/X509Parser.sol";
 
 
 library X509CertNodes {
@@ -98,24 +97,6 @@ library X509CertNodes {
 
         // signatureValue
         certNodes.sigNode = certDer.nextSiblingOf(certNodes.algTypeNode);
-    }
-
-    function getValidityTimestamps(
-        CertTbsNodesObj memory tbsNodes,
-        bytes memory certDer
-    )
-        internal
-        pure
-        returns (uint256 notBefore, uint256 notAfter)
-    {
-        uint256 notBeforeNode = certDer.firstChildOf(tbsNodes.validityNode);
-        uint256 notAfterNode = certDer.nextSiblingOf(notBeforeNode);
-
-        notBefore =
-            X509Parser.toTimestamp(certDer.bytesAt(notBeforeNode));
-
-        notAfter =
-            X509Parser.toTimestamp(certDer.bytesAt(notAfterNode));
     }
 
 }

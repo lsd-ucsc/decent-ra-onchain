@@ -14,8 +14,9 @@ import {DecentServerCert} from "../../contracts/DecentServerCert.sol";
 import {DecentServerCertMgr} from "../../contracts/DecentServerCertMgr.sol";
 import {IASReportCertMgr} from "../../contracts/IASReportCertMgr.sol";
 import {IASRootCertMgr} from "../../contracts/IASRootCertMgr.sol";
-import {TestCerts} from "../TestCerts.sol";
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
+
+import {TestCerts} from "../TestCerts.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts

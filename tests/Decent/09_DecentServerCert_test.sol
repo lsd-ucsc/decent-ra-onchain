@@ -10,10 +10,11 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 
 
-import {DecentServerCert_proxy} from "./09_DecentServerCert.sol";
 import {IASReportCertMgr} from "../../contracts/IASReportCertMgr.sol";
 import {IASRootCertMgr} from "../../contracts/IASRootCertMgr.sol";
+
 import {TestCerts} from "../TestCerts.sol";
+import {DecentServerCert_proxy} from "./09_DecentServerCert.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts

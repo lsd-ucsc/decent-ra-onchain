@@ -3,10 +3,12 @@ pragma solidity ^0.8.17;
 
 
 import {Asn1Decode} from "../libs/asn1-decode/Asn1Decode.sol";
-import {OIDs, Names} from "./Constants.sol";
 import {LibRsaSha256} from "../libs/sig-verify-algs/LibRsaSha256.sol";
+
+import {OIDs, Names} from "./Constants.sol";
 import {X509CertNodes} from "./X509CertNodes.sol";
 import {X509Name} from "./X509Name.sol";
+import {X509Timestamp} from "./X509Timestamp.sol";
 
 
 library IASRootCert {
@@ -14,6 +16,7 @@ library IASRootCert {
     using Asn1Decode for bytes;
     using X509CertNodes for X509CertNodes.CertNodesObj;
     using X509CertNodes for X509CertNodes.CertTbsNodesObj;
+    using X509Timestamp for X509CertNodes.CertTbsNodesObj;
 
     //===== structs =====
 
