@@ -21,6 +21,8 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
     - name: Run Solidity Unit Testing for ens-contracts Tests
       uses: EthereumRemix/sol-test@v1.1
