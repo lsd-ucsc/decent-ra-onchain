@@ -58,8 +58,8 @@ jobs:
 
     - name: Compiling contracts for tests/HelloWorldApp.sol
       run: |
-        ${SOLC_BIN} ${SOLC_FLAGS} --bin ${{ github.workspace }}/contracts/HelloWorldApp.sol
-        ${SOLC_BIN} ${SOLC_FLAGS} --abi ${{ github.workspace }}/contracts/HelloWorldApp.sol
+        ${SOLC_BIN} ${SOLC_FLAGS} --bin ${{ github.workspace }}/tests/HelloWorldApp.sol
+        ${SOLC_BIN} ${SOLC_FLAGS} --abi ${{ github.workspace }}/tests/HelloWorldApp.sol
 
     - name: Calculating checksums of the binary
       run: |
