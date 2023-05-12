@@ -19,13 +19,13 @@ jobs:
 
     env:
       SOLC_BIN: ${{ github.workspace }}/build/solc-static-linux
-      SOLC_FLAGS: --optimize --optimize-runs 200 \
-                  --revert-strings strip \
-                  --via-ir \
-                  --overwrite \
-                  --base-path ${{ github.workspace }} \
+      SOLC_FLAGS: --optimize --optimize-runs 200
+                  --revert-strings strip
+                  --via-ir
+                  --overwrite
+                  --base-path ${{ github.workspace }}
                   --output-dir ${{ github.workspace }}/build/
-      SOLC_VER: $(SOLC_BIN --version)
+      SOLC_VER: $(${SOLC_BIN} --version)
 
     name: A job to create a release
     steps:
