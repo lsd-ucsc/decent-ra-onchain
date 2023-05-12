@@ -25,7 +25,7 @@ jobs:
                   --overwrite
                   --base-path ${{ github.workspace }}
                   --output-dir ${{ github.workspace }}/build/
-      SOLC_VER: $(${SOLC_BIN} --version)
+      RELE_NOTE: ${{ github.workspace }}/build/release_note.md
 
     name: A job to create a release
     steps:
@@ -74,25 +74,29 @@ jobs:
 
     - name: Generate release note
       run: |
-        echo "# Release note"                   >> ./build/release_note.md
-        echo "## Contracts"                     >> ./build/release_note.md
-        echo "- contracts/IASRootCertMgr.sol"       >> ./build/release_note.md
-        echo "- contracts/IASReportCertMgr.sol"     >> ./build/release_note.md
-        echo "- contracts/DecentServerCertMgr.sol"  >> ./build/release_note.md
-        echo "- tests/HelloWorldApp.sol"            >> ./build/release_note.md
-        echo "" >> ./build/release_note.md
-        echo "## Build configurations"                      >> ./build/release_note.md
-        echo "- OS: \`${{ matrix.os }}\`"                   >> ./build/release_note.md
-        echo "- Solc version: \`${SOLC_VER}\`"      >> ./build/release_note.md
-        echo "- Compiler Flags: \`${SOLC_FLAGS}\`" >> ./build/release_note.md
-        echo "" >> ./build/release_note.md
-        echo "## Checksums"       >> ./build/release_note.md
-        echo "\`\`\`"             >> ./build/release_note.md
-        cat ./build/checksums.txt >> ./build/release_note.md
-        echo "\`\`\`"             >> ./build/release_note.md
-        echo "" >> ./build/release_note.md
-        echo "## Gas Cost Evaluations" >> ./build/release_note.md
-        echo "" >> ./build/release_note.md
+        echo "# Release note"                   >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Contracts"                         >> ${RELE_NOTE}
+        echo "- contracts/IASRootCertMgr.sol"       >> ${RELE_NOTE}
+        echo "- contracts/IASReportCertMgr.sol"     >> ${RELE_NOTE}
+        echo "- contracts/DecentServerCertMgr.sol"  >> ${RELE_NOTE}
+        echo "- tests/HelloWorldApp.sol"            >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Build configurations"                       >> ${RELE_NOTE}
+        echo "- OS: \`${{ matrix.os }}\`"                    >> ${RELE_NOTE}
+        echo "- Solc version: \`$(${SOLC_BIN} --version)\`"  >> ${RELE_NOTE}
+        echo "- Compiler Flags: \`${SOLC_FLAGS}\`"           >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Checksums"       >> ${RELE_NOTE}
+        echo "\`\`\`"             >> ${RELE_NOTE}
+        cat ./build/checksums.txt >> ${RELE_NOTE}
+        echo "\`\`\`"             >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Gas Cost Evaluations" >> ${RELE_NOTE}
+        echo "\`\`\`json"         >> ${RELE_NOTE}
+        cat ./build/checksums.txt >> ${RELE_NOTE}
+        echo "\`\`\`"             >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
 
     - name: Echo release note
       run: |
