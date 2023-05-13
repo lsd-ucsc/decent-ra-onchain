@@ -10,6 +10,7 @@
 
 import argparse
 import base64
+import json
 import logging
 import os
 import signal
@@ -95,7 +96,7 @@ def LoadDecentAppCertDer() -> bytes:
 	return _PemToDerCert(certPem)
 
 
-def RunTests_VerifyIndividually() -> None:
+def RunTests_VerifyIndividually() -> dict:
 	# connect to ganache
 	ganacheUrl = 'http://localhost:{}'.format(GANACHE_PORT)
 	w3 = Web3(Web3.HTTPProvider(ganacheUrl))
@@ -116,6 +117,8 @@ def RunTests_VerifyIndividually() -> None:
 		account=0, # use account 0
 		keyJson=CHECKSUM_KEYS_PATH
 	)
+
+	gasCosts = {}
 
 	# deploy IASRootCertMgr contract
 	print('Deploying IASRootCertMgr contract...')
@@ -138,6 +141,8 @@ def RunTests_VerifyIndividually() -> None:
 	iasRootAddr = iasRootReceipt.contractAddress
 	print('IASRootCertMgr contract deployed at {}'.format(iasRootAddr))
 	print()
+
+	gasCosts['deployIasRootCertMgr'] = iasRootReceipt.gasUsed
 
 	# deploy IASReportCertMgr contract
 	print('Deploying IASReportCertMgr contract...')
@@ -168,9 +173,11 @@ def RunTests_VerifyIndividually() -> None:
 	)
 	print()
 
+	gasCosts['deployIasReportCertMgr'] = iasReportReceipt.gasUsed
+
 	# verify IAS report certificate
 	print('Verifying IAS report certificate...')
-	EthContractHelper.CallContractFunc(
+	verifyReceipt = EthContractHelper.CallContractFunc(
 		w3=w3,
 		contract=iasReportContract,
 		funcName='verifyCert',
@@ -181,6 +188,8 @@ def RunTests_VerifyIndividually() -> None:
 		confirmPrompt=False # don't prompt for confirmation
 	)
 	print()
+
+	gasCosts['verifyIasReportCert'] = verifyReceipt.gasUsed
 
 	# deploy DecentServerCertMgr contract
 	print('Deploying DecentServerCertMgr contract...')
@@ -211,9 +220,11 @@ def RunTests_VerifyIndividually() -> None:
 	)
 	print()
 
+	gasCosts['deployDecentServerCertMgr'] = decentSvrReceipt.gasUsed
+
 	# verify Decent server certificate
 	print('Verifying Decent Server certificate...')
-	EthContractHelper.CallContractFunc(
+	verifyReceipt = EthContractHelper.CallContractFunc(
 		w3=w3,
 		contract=decentSvrContract,
 		funcName='verifyCert',
@@ -224,6 +235,8 @@ def RunTests_VerifyIndividually() -> None:
 		confirmPrompt=False # don't prompt for confirmation
 	)
 	print()
+
+	gasCosts['verifyDecentServerCert'] = verifyReceipt.gasUsed
 
 	# deploy HelloWorldApp contract
 	print('Deploying HelloWorldApp contract...')
@@ -254,9 +267,11 @@ def RunTests_VerifyIndividually() -> None:
 	)
 	print()
 
+	gasCosts['deployHelloWorldApp'] = decentAppReceipt.gasUsed
+
 	# verify Decent server certificate
 	print('Verifying Decent App certificate...')
-	EthContractHelper.CallContractFunc(
+	verifyReceipt = EthContractHelper.CallContractFunc(
 		w3=w3,
 		contract=decentAppContract,
 		funcName='loadAppCert',
@@ -270,6 +285,10 @@ def RunTests_VerifyIndividually() -> None:
 		confirmPrompt=False # don't prompt for confirmation
 	)
 	print()
+
+	gasCosts['verifyDecentAppCert'] = verifyReceipt.gasUsed
+
+	return gasCosts
 
 
 def RunTests_VerifyAllOnce() -> None:
@@ -293,6 +312,8 @@ def RunTests_VerifyAllOnce() -> None:
 		account=0, # use account 0
 		keyJson=CHECKSUM_KEYS_PATH
 	)
+
+	gasCosts = {}
 
 	# deploy IASRootCertMgr contract
 	print('Deploying IASRootCertMgr contract...')
@@ -391,7 +412,7 @@ def RunTests_VerifyAllOnce() -> None:
 
 	# verify Decent certificate chain
 	print('Verifying Decent App certificate...')
-	EthContractHelper.CallContractFunc(
+	verifyReceipt = EthContractHelper.CallContractFunc(
 		w3=w3,
 		contract=decentAppContract,
 		funcName='verifyCertChain',
@@ -405,6 +426,22 @@ def RunTests_VerifyAllOnce() -> None:
 		confirmPrompt=False # don't prompt for confirmation
 	)
 	print()
+
+	gasCosts['verifyCertChain'] = verifyReceipt.gasUsed
+
+	return gasCosts
+
+
+def EvaluateGasCosts() -> None:
+	gasCosts1 = RunTests_VerifyIndividually()
+	gasCosts2 = RunTests_VerifyAllOnce()
+	gasCost = {
+		**gasCosts1,
+		**gasCosts2,
+	}
+	savePath = os.path.join(BUILD_DIR, 'gas_costs.json')
+	with open(savePath, 'w') as f:
+		json.dump(gasCost, f, indent='\t')
 
 
 def StopGanache(ganacheProc: subprocess.Popen) -> None:
@@ -442,6 +479,10 @@ def main():
 		'all',
 		help='Verify certificates all at once'
 	)
+	modParser.add_parser(
+		'eval',
+		help='Evaluate gas costs and save results to a JSON file'
+	)
 	args = argParser.parse_args()
 
 	# logging configuration
@@ -456,6 +497,8 @@ def main():
 			RunTests_VerifyIndividually()
 		elif args.testMode == 'all':
 			RunTests_VerifyAllOnce()
+		elif args.testMode == 'eval':
+			EvaluateGasCosts()
 		else:
 			raise RuntimeError('Unexpected test mode: {}'.format(args.testMode))
 	finally:
