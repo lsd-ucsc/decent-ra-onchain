@@ -4,9 +4,10 @@ pragma solidity ^0.8.17;
 
 import {Asn1Decode} from "../libs/asn1-decode/Asn1Decode.sol";
 import {BytesUtils} from "../libs/ens-contracts/BytesUtils.sol";
+
 import {
     Interface_DecentServerCertMgr
-} from "../contracts/Interface_DecentServerCertMgr.sol";
+} from "./Interface_DecentServerCertMgr.sol";
 import {LibSecp256k1Sha256} from "./LibSecp256k1Sha256.sol";
 import {OIDs} from "./Constants.sol";
 import {X509CertNodes} from "./X509CertNodes.sol";

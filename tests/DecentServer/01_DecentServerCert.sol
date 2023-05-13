@@ -6,14 +6,15 @@ pragma solidity >=0.4.17 <0.9.0;
 import "remix_tests.sol";
 
 import {BytesUtils} from "../../libs/ens-contracts/BytesUtils.sol";
+
+import {DecentServerCert} from "../../contracts/DecentServerCert.sol";
 import {OIDs} from "../../contracts/Constants.sol";
 import {X509CertNodes} from "../../contracts/X509CertNodes.sol";
-import {DecentServerCert} from "../../contracts/DecentServerCert.sol";
 
 import {TestCerts} from "../TestCerts.sol";
 
 
-contract DecentServerCert_proxy {
+contract DecentServerCertBasics_proxy {
 
     using DecentServerCert for DecentServerCert.DecentServerCertObj;
     using X509CertNodes for X509CertNodes.CertNodesObj;
@@ -87,8 +88,8 @@ contract DecentServerCert_proxy {
     }
 
     function jsonSimpleReadValPosTest() public {
+        bytes memory str = REPORT_JSON;
         {
-            bytes memory str = REPORT_JSON;
             bytes memory key = "\"isvEnclaveQuoteStatus\"";
             (uint256 idx, uint256 len) =
                 DecentServerCert.jsonSimpleReadValPos(str, key);
@@ -104,7 +105,6 @@ contract DecentServerCert_proxy {
             );
         }
         {
-            bytes memory str = REPORT_JSON;
             bytes memory key = "\"isvEnclaveQuoteBody\"";
             (uint256 idx, uint256 len) =
                 DecentServerCert.jsonSimpleReadValPos(str, key);
@@ -138,6 +138,31 @@ contract DecentServerCert_proxy {
             "enclaveHash mismatch"
         );
     }
+
+}
+
+
+contract DecentServerCertCerts_proxy {
+
+    using DecentServerCert for DecentServerCert.DecentServerCertObj;
+    using X509CertNodes for X509CertNodes.CertNodesObj;
+
+    //===== constants =====
+
+    //===== member variables =====
+
+    mapping(bytes32 => bool) m_quoteStatusMap;
+
+    //===== constructor =====
+
+    constructor() {
+        m_quoteStatusMap[keccak256("OK")] = true;
+        m_quoteStatusMap[keccak256("CONFIGURATION_NEEDED")] = true;
+        m_quoteStatusMap[keccak256("SW_HARDENING_NEEDED")] = true;
+        m_quoteStatusMap[keccak256("CONFIGURATION_AND_SW_HARDENING_NEEDED")] = true;
+    }
+
+    //===== functions =====
 
     function verifySelfSignTest() public {
         bytes memory certDer = TestCerts.DECENT_SVR_CERT_DER;

@@ -18,7 +18,7 @@ contract X509Parser_proxy{
 			uint256 result = X509Parser.toTimestamp("161114153731Z");
 			gasUsed -= gasleft();
 			Assert.equal(result, 1479137851, "timestamp not equal");
-			//Assert.equal(gasUsed, 0, "gasUsed");
+			// Assert.equal(gasUsed, 8100, "gasUsed");
 		}
 
 		{
@@ -26,7 +26,7 @@ contract X509Parser_proxy{
 			uint256 result = X509Parser.toTimestamp("220101000000Z");
 			gasUsed -= gasleft();
 			Assert.equal(result, 1640995200, "timestamp not equal");
-			//Assert.equal(gasUsed, 0, "gasUsed");
+			// Assert.equal(gasUsed, 8088, "gasUsed");
 		}
 
 		{
@@ -34,7 +34,7 @@ contract X509Parser_proxy{
 			uint256 result = X509Parser.toTimestamp("20491231235959Z");
 			gasUsed -= gasleft();
 			Assert.equal(result, 2524607999, "timestamp not equal");
-			//Assert.equal(gasUsed, 0, "gasUsed");
+			// Assert.equal(gasUsed, 8552, "gasUsed");
 		}
 
 		{

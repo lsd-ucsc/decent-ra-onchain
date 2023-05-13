@@ -10,39 +10,41 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 
 
-import {X509Extension} from "../../contracts/X509Extension.sol";
-import {X509Extension_proxy} from "./08_X509Extension.sol";
+import {DecentAppCert_proxy} from "./02_DecentAppCert.sol";
 
 
 // File name has to end with '_test.sol', this file can contain more than one testSuite contracts
-contract X509Extension_testSuit {
+contract DecentAppCert_testSuit {
 
-    using X509Extension for X509Extension.ExtEntry;
+    //===== member variables =====
+
+    address m_testProxyAddr;
+
+    //===== functions =====
 
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeAll() public {
+        m_testProxyAddr = address(new DecentAppCert_proxy());
     }
 
-    function findIdxOfExtEntryTest() public {
-        X509Extension_proxy proxy = new X509Extension_proxy();
-        try proxy.findIdxOfExtEntryTest() {
-            Assert.ok(true, "findIdxOfExtEntryTest should not throw");
+    function loadCertWithAddrTest() public {
+        try DecentAppCert_proxy(m_testProxyAddr).loadCertWithAddrTest() {
+            Assert.ok(true, "loadCertWithAddrTest should not throw");
         } catch Error(string memory reason) {
             Assert.ok(false, reason);
         } catch (bytes memory /*lowLevelData*/) {
-            Assert.ok(false, "unexpected error - findIdxOfExtEntryTest");
+            Assert.ok(false, "unexpected error - loadCertWithAddrTest");
         }
     }
 
-    function extractNeededExtensionsTest() public {
-        X509Extension_proxy proxy = new X509Extension_proxy();
-        try proxy.extractNeededExtensionsTest() {
-            Assert.ok(true, "extractNeededExtensionsTest should not throw");
+    function loadCertWithWrongAddrTest() public {
+        try DecentAppCert_proxy(m_testProxyAddr).loadCertWithWrongAddrTest() {
+            Assert.ok(false, "loadCertWithWrongAddrTest should throw");
         } catch Error(string memory reason) {
-            Assert.ok(false, reason);
+            Assert.equal(reason, "Invalid issuer", reason);
         } catch (bytes memory /*lowLevelData*/) {
-            Assert.ok(false, "unexpected error - extractNeededExtensionsTest");
+            Assert.ok(false, "unexpected error - loadCertWithWrongAddrTest");
         }
     }
 

@@ -32,6 +32,19 @@ library LibParamPassing {
         return 3;
     }
 
+    function privMemFuncProxy(Struct1 memory s) internal pure returns (uint256) {
+        return privMemFunc(s);
+    }
+
+    function privMemFunc(bytes memory b) private pure returns (uint256) {
+        require(b[0] == 0x01, "b[0]!=1");
+        return 3;
+    }
+
+    function privMemFuncProxy(bytes memory b) internal pure returns (uint256) {
+        return privMemFunc(b);
+    }
+
     function internMemFunc(bytes memory b) internal pure returns (uint256) {
         require(b[0] == 0x01, "b[0]!=1");
         return 3;

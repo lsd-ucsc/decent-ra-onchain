@@ -1,0 +1,185 @@
+name: Create release
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - "v*.*.*"
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  create_release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-22.04 ]
+
+        python-version: [ 3.11 ]
+        node-version: [ 18.16.0 ]
+
+        ganache-version: [ 7.8.0 ]
+
+        solc-version: [ v0.8.20 ]
+
+    env:
+      SOLC_BIN: ${{ github.workspace }}/build/solc-static-linux
+      SOLC_FLAGS: >-
+        --optimize --optimize-runs 200
+        --revert-strings strip
+        --via-ir
+        --overwrite
+        --base-path ${{ github.workspace }}
+        --output-dir ${{ github.workspace }}/build/
+      SOLC_VER_CMD: >-
+        ${{ github.workspace }}/build/solc-static-linux
+        --version | tail -n 1 | sed -e "s/^Version: //g"
+      RELE_NOTE: ${{ github.workspace }}/build/release_note.md
+
+    name: A job to create a release
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Installing Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Installing Python packages
+      run: |
+        python3 -m pip install --requirement ${{ github.workspace }}/utils/gas_cost_eval_requirements.txt
+
+    - name: Installing Node ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Installing NPM packages
+      run: |
+        npm install -g ganache@${{ matrix.ganache-version }}
+
+    - name: Installing Solc compiler
+      run: |
+        mkdir -p ${{ github.workspace }}/build/
+        curl -fsSL -o ${SOLC_BIN} \
+          https://github.com/ethereum/solidity/releases/download/${{ matrix.solc-version }}/solc-static-linux
+        chmod +x ${SOLC_BIN}
+
+    - name: Compiling contracts for contracts/IASRootCertMgr.sol
+      run: |
+        ${SOLC_BIN} ${SOLC_FLAGS} --bin ${{ github.workspace }}/contracts/IASRootCertMgr.sol
+        ${SOLC_BIN} ${SOLC_FLAGS} --abi ${{ github.workspace }}/contracts/IASRootCertMgr.sol
+
+    - name: Compiling contracts for contracts/IASReportCertMgr.sol
+      run: |
+        ${SOLC_BIN} ${SOLC_FLAGS} --bin ${{ github.workspace }}/contracts/IASReportCertMgr.sol
+        ${SOLC_BIN} ${SOLC_FLAGS} --abi ${{ github.workspace }}/contracts/IASReportCertMgr.sol
+
+    - name: Compiling contracts for contracts/DecentServerCertMgr.sol
+      run: |
+        ${SOLC_BIN} ${SOLC_FLAGS} --bin ${{ github.workspace }}/contracts/DecentServerCertMgr.sol
+        ${SOLC_BIN} ${SOLC_FLAGS} --abi ${{ github.workspace }}/contracts/DecentServerCertMgr.sol
+
+    - name: Compiling contracts for tests/HelloWorldApp.sol
+      run: |
+        ${SOLC_BIN} ${SOLC_FLAGS} --bin ${{ github.workspace }}/tests/HelloWorldApp.sol
+        ${SOLC_BIN} ${SOLC_FLAGS} --abi ${{ github.workspace }}/tests/HelloWorldApp.sol
+
+    - name: Prepare binaries for gas cost evaluation
+      working-directory: ${{ github.workspace }}/build
+      run: |
+        mkdir -p contracts
+        cp IASRootCertMgr.bin      contracts/IASRootCertMgr.bin
+        cp IASRootCertMgr.abi      contracts/IASRootCertMgr.abi
+        cp IASReportCertMgr.bin    contracts/IASReportCertMgr.bin
+        cp IASReportCertMgr.abi    contracts/IASReportCertMgr.abi
+        cp DecentServerCertMgr.bin contracts/DecentServerCertMgr.bin
+        cp DecentServerCertMgr.abi contracts/DecentServerCertMgr.abi
+        mkdir -p tests
+        cp HelloWorldApp.bin  tests/HelloWorldApp.bin
+        cp HelloWorldApp.abi  tests/HelloWorldApp.abi
+
+    - name: Run gas cost evaluation
+      run: |
+        python3 ${{ github.workspace }}/utils/GanacheContractTests.py eval
+
+    - name: Calculating checksums of the binary
+      working-directory: ${{ github.workspace }}/build
+      run: |
+        sha256sum solc-static-linux        >> checksums.txt
+        sha256sum IASRootCertMgr.bin       >> checksums.txt
+        sha256sum IASRootCertMgr.abi       >> checksums.txt
+        sha256sum IASReportCertMgr.bin     >> checksums.txt
+        sha256sum IASReportCertMgr.abi     >> checksums.txt
+        sha256sum DecentServerCertMgr.bin  >> checksums.txt
+        sha256sum DecentServerCertMgr.abi  >> checksums.txt
+        sha256sum HelloWorldApp.bin        >> checksums.txt
+        sha256sum HelloWorldApp.abi        >> checksums.txt
+
+    - name: Generate release note
+      working-directory: ${{ github.workspace }}/build
+      run: |
+        echo "# Release note"                   >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Contracts"                         >> ${RELE_NOTE}
+        echo "- contracts/IASRootCertMgr.sol"       >> ${RELE_NOTE}
+        echo "- contracts/IASReportCertMgr.sol"     >> ${RELE_NOTE}
+        echo "- contracts/DecentServerCertMgr.sol"  >> ${RELE_NOTE}
+        echo "- tests/HelloWorldApp.sol"            >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Build configurations"                          >> ${RELE_NOTE}
+        echo "- OS: \`${{ matrix.os }}\`"                       >> ${RELE_NOTE}
+        echo "- Solc version: \`$(bash -c "${SOLC_VER_CMD}")\`" >> ${RELE_NOTE}
+        echo "- Compiler Flags: \`${SOLC_FLAGS}\`"              >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Checksums"       >> ${RELE_NOTE}
+        echo "\`\`\`"             >> ${RELE_NOTE}
+        cat checksums.txt         >> ${RELE_NOTE}
+        echo "\`\`\`"             >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+        echo "## Gas Cost Evaluations" >> ${RELE_NOTE}
+        echo "\`\`\`json"         >> ${RELE_NOTE}
+        cat gas_costs.json        >> ${RELE_NOTE}
+        echo ""                   >> ${RELE_NOTE}
+        echo "\`\`\`"             >> ${RELE_NOTE}
+        echo "" >> ${RELE_NOTE}
+
+    - name: Echo release note
+      run: |
+        cat ${{ github.workspace }}/build/release_note.md
+
+    - name: Release for non-tagged commit
+      uses: actions/upload-artifact@v3
+      if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      with:
+        name: non_tagged_release
+        path: |
+          ${{ github.workspace }}/build/release_note.md
+          ${{ github.workspace }}/build/IASRootCertMgr.bin
+          ${{ github.workspace }}/build/IASRootCertMgr.abi
+          ${{ github.workspace }}/build/IASReportCertMgr.bin
+          ${{ github.workspace }}/build/IASReportCertMgr.abi
+          ${{ github.workspace }}/build/DecentServerCertMgr.bin
+          ${{ github.workspace }}/build/DecentServerCertMgr.abi
+          ${{ github.workspace }}/build/HelloWorldApp.bin
+          ${{ github.workspace }}/build/HelloWorldApp.abi
+          ${{ github.workspace }}/build/gas_costs.json
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        body_path: ${{ github.workspace }}/build/release_note.md
+        files: |
+          ${{ github.workspace }}/build/IASRootCertMgr.bin
+          ${{ github.workspace }}/build/IASRootCertMgr.abi
+          ${{ github.workspace }}/build/IASReportCertMgr.bin
+          ${{ github.workspace }}/build/IASReportCertMgr.abi
+          ${{ github.workspace }}/build/DecentServerCertMgr.bin
+          ${{ github.workspace }}/build/DecentServerCertMgr.abi
+          ${{ github.workspace }}/build/HelloWorldApp.bin
+          ${{ github.workspace }}/build/HelloWorldApp.abi
+          ${{ github.workspace }}/build/gas_costs.json
