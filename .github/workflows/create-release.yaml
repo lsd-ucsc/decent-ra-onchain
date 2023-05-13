@@ -24,14 +24,14 @@ jobs:
 
     env:
       SOLC_BIN: ${{ github.workspace }}/build/solc-static-linux
-      SOLC_FLAGS: >
+      SOLC_FLAGS: >-
         --optimize --optimize-runs 200
         --revert-strings strip
         --via-ir
         --overwrite
         --base-path ${{ github.workspace }}
         --output-dir ${{ github.workspace }}/build/
-      SOLC_VER_CMD: >
+      SOLC_VER_CMD: >-
         ${{ github.workspace }}/build/solc-static-linux
         --version | tail -n 1 | sed -e "s/^Version: //g"
       RELE_NOTE: ${{ github.workspace }}/build/release_note.md
