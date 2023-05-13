@@ -143,6 +143,7 @@ jobs:
         echo "## Gas Cost Evaluations" >> ${RELE_NOTE}
         echo "\`\`\`json"         >> ${RELE_NOTE}
         cat gas_costs.json        >> ${RELE_NOTE}
+        echo ""                   >> ${RELE_NOTE}
         echo "\`\`\`"             >> ${RELE_NOTE}
         echo "" >> ${RELE_NOTE}
 
