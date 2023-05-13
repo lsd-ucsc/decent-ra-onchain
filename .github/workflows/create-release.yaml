@@ -90,7 +90,7 @@ jobs:
 
     - name: Run gas cost evaluation
       run: |
-        python3 ${{ github.workspace }}/tests/GanacheContractTests.py eval
+        python3 ${{ github.workspace }}/utils/GanacheContractTests.py eval
 
     - name: Calculating checksums of the binary
       working-directory: ${{ github.workspace }}/build
