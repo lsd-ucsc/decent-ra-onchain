@@ -88,6 +88,20 @@ jobs:
         ${SOLC_BIN} ${SOLC_FLAGS} --bin ${{ github.workspace }}/tests/HelloWorldApp.sol
         ${SOLC_BIN} ${SOLC_FLAGS} --abi ${{ github.workspace }}/tests/HelloWorldApp.sol
 
+    - name: Prepare binaries for gas cost evaluation
+      working-directory: ${{ github.workspace }}/build
+      run: |
+        mkdir -p contracts
+        cp IASRootCertMgr.bin      contracts/IASRootCertMgr.bin
+        cp IASRootCertMgr.abi      contracts/IASRootCertMgr.abi
+        cp IASReportCertMgr.bin    contracts/IASReportCertMgr.bin
+        cp IASReportCertMgr.abi    contracts/IASReportCertMgr.abi
+        cp DecentServerCertMgr.bin contracts/DecentServerCertMgr.bin
+        cp DecentServerCertMgr.abi contracts/DecentServerCertMgr.abi
+        mkdir -p tests
+        cp HelloWorldApp.bin  tests/HelloWorldApp.bin
+        cp HelloWorldApp.abi  tests/HelloWorldApp.abi
+
     - name: Run gas cost evaluation
       run: |
         python3 ${{ github.workspace }}/utils/GanacheContractTests.py eval
