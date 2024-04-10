@@ -35,6 +35,7 @@ library DecentServerCert {
         bool isVerified;
         address serverKeyAddr;
         bytes32 enclaveHash;
+        bytes32 platformId;
     }
 
     //===== functions =====
