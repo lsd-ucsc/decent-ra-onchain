@@ -138,17 +138,16 @@ contract LibSecp256k1Sha256_testSuite {
 
     function ecrecoverGasEval() public {
         address addr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
-        uint8 recId = 27;
 
+        uint8   v = TestCerts.DECENT_APP_CERT_SIGN_V;
         bytes32 r = TestCerts.DECENT_APP_CERT_SIGN_R;
         bytes32 s = TestCerts.DECENT_APP_CERT_SIGN_S;
 
-        bytes32 msgHash =
-            0x43c4bb5ebe59f2bfa5d1d90cb04f49c2d814f2be48a00055c014fefccf9de381;
+        bytes32 msgHash =  TestCerts.DECENT_APP_CERT_HASH;
 
         address actAddr;
         uint256 gasUsed = gasleft();
-        actAddr = ecrecover(msgHash, recId, r, s);
+        actAddr = ecrecover(msgHash, v, r, s);
         gasUsed = gasUsed - gasleft();
 
         Assert.equal(actAddr, addr, "ecrecover returns a diff addr");

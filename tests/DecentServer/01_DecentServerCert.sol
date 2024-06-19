@@ -56,6 +56,7 @@ contract DecentServerCertBasics_proxy {
 
     constructor() {
         m_quoteStatusMap[keccak256("OK")] = true;
+        m_quoteStatusMap[keccak256("GROUP_OUT_OF_DATE")] = true;
         m_quoteStatusMap[keccak256("CONFIGURATION_NEEDED")] = true;
         m_quoteStatusMap[keccak256("SW_HARDENING_NEEDED")] = true;
         m_quoteStatusMap[keccak256("CONFIGURATION_AND_SW_HARDENING_NEEDED")] = true;
@@ -157,6 +158,7 @@ contract DecentServerCertCerts_proxy {
 
     constructor() {
         m_quoteStatusMap[keccak256("OK")] = true;
+        m_quoteStatusMap[keccak256("GROUP_OUT_OF_DATE")] = true;
         m_quoteStatusMap[keccak256("CONFIGURATION_NEEDED")] = true;
         m_quoteStatusMap[keccak256("SW_HARDENING_NEEDED")] = true;
         m_quoteStatusMap[keccak256("CONFIGURATION_AND_SW_HARDENING_NEEDED")] = true;
