@@ -34,7 +34,7 @@ library OIDs {
     //   Root OIDs
     bytes32 constant OID_DECENT_EXT_VER =
         0x6982f5c89a94ffdfaaab8591c1b5f7c2f782b01e010000000000000000000000;
-    bytes32 constant OID_DECENT_PLATFORM_ID  =
+    bytes32 constant OID_DECENT_PLATFORM_TYPE  =
         0x6982f5c89a94ffdfaaab8591c1b5f7c2f782b01e020000000000000000000000;
     bytes32 constant OID_DECENT_HASHED_KEYS  =
         0x6982f5c89a94ffdfaaab8591c1b5f7c2f782b01e040000000000000000000000;

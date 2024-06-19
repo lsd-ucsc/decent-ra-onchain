@@ -97,7 +97,7 @@ library DecentAppCert {
         X509Extension.ExtEntry[] memory extEntries =
             new X509Extension.ExtEntry[](5);
         extEntries[0].extnID = OIDs.OID_DECENT_EXT_VER;
-        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_ID;
+        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_TYPE;
         extEntries[2].extnID = OIDs.OID_DECENT_APP_HASH;
         extEntries[3].extnID = OIDs.OID_DECENT_AUTH_LIST;
 

@@ -35,7 +35,7 @@ library DecentServerCert {
         bool isVerified;
         address serverKeyAddr;
         bytes32 enclaveHash;
-        bytes32 platformId;
+        bytes32 platformId; // the fingerprint of the platform
     }
 
     //===== functions =====
@@ -272,7 +272,7 @@ library DecentServerCert {
         X509Extension.ExtEntry[] memory extEntries =
             new X509Extension.ExtEntry[](5);
         extEntries[0].extnID = OIDs.OID_DECENT_EXT_VER;
-        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_ID;
+        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_TYPE;
         extEntries[2].extnID = OIDs.OID_DECENT_HASHED_KEYS;
         extEntries[3].extnID = OIDs.OID_DECENT_STD_REP_DATA;
         extEntries[4].extnID = OIDs.OID_DECENT_ATTESTATION;
