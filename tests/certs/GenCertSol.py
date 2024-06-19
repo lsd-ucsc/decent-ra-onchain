@@ -369,15 +369,15 @@ def WriteCertWithECKey(
 	return outLines
 
 
-DECENT_CERT_VER_OID          = ObjectIdentifier('1.3.6.1.4.1.62021.1')
-DECENT_CERT_TYPE_OID         = ObjectIdentifier('1.3.6.1.4.1.62021.2')
-DECENT_CERT_KEYRING_HASH_OID = ObjectIdentifier('1.3.6.1.4.1.62021.4')
-DECENT_CERT_APP_HASH_OID     = ObjectIdentifier('1.3.6.1.4.1.62021.5')
-DECENT_CERT_AUTH_LIST_OID    = ObjectIdentifier('1.3.6.1.4.1.62021.6')
-DECENT_CERT_PLAT_ID_OID      = ObjectIdentifier('1.3.6.1.4.1.62021.7')
+DECENT_CERT_VER_OID          = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.1')
+DECENT_CERT_TYPE_OID         = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.2')
+DECENT_CERT_KEYRING_HASH_OID = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.4')
+DECENT_CERT_APP_HASH_OID     = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.5')
+DECENT_CERT_AUTH_LIST_OID    = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.6')
+DECENT_CERT_PLAT_ID_OID      = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.7')
 
-DECENT_CERT_SGX_STD_REP_DATA = ObjectIdentifier('1.3.6.1.4.1.62021.3.1.1')
-DECENT_CERT_SGX_REP_RLP      = ObjectIdentifier('1.3.6.1.4.1.62021.3.1.2')
+DECENT_CERT_SGX_STD_REP_DATA = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.3.1.1')
+DECENT_CERT_SGX_REP_RLP      = ObjectIdentifier('1.3.6.1.4.1.62021.1.1.3.1.2')
 
 
 def WriteDecentSvrCert(
