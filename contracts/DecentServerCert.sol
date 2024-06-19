@@ -270,12 +270,13 @@ library DecentServerCert {
 
         // extracting extensions
         X509Extension.ExtEntry[] memory extEntries =
-            new X509Extension.ExtEntry[](5);
+            new X509Extension.ExtEntry[](6);
         extEntries[0].extnID = OIDs.OID_DECENT_EXT_VER;
         extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_TYPE;
         extEntries[2].extnID = OIDs.OID_DECENT_HASHED_KEYS;
         extEntries[3].extnID = OIDs.OID_DECENT_STD_REP_DATA;
         extEntries[4].extnID = OIDs.OID_DECENT_ATTESTATION;
+        extEntries[5].extnID = OIDs.OID_DECENT_PLATFORM_ID;
 
         X509Extension.extractNeededExtensions(
             certDer,
@@ -315,6 +316,10 @@ library DecentServerCert {
         else {
             require(false, "Unsupported platform");
         }
+
+        // Platform ID
+        require(extEntries[5].isParsed, "Platform ID not found");
+        cert.platformId = extEntries[5].extnValue.readBytes32(0);
 
         // Decent server public key
         extractDecentServerKey(cert, certNodes, certDer, keyRing);
