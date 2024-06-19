@@ -219,6 +219,11 @@ contract DecentServerCertCerts_proxy {
             TestCerts.DECENT_SVR_CERT_KEY_ADDR,
             "serverKeyAddr mismatch"
         );
+        Assert.equal(
+            cert.platformId,
+            TestCerts.DECENT_SVR_CERT_PLAT_ID,
+            "serverKeyAddr mismatch"
+        );
     }
 
 }
