@@ -35,4 +35,14 @@ interface Interface_DecentServerCertMgr {
         view
         returns (bytes32);
 
+    /**
+     * Get the platform ID of a Decent Server
+     * @param svrKeyAddr Address derived from the Decent Server public key
+     * @return bytes32 Platform ID of the Decent Server
+     */
+     function getPlatformId(address svrKeyAddr)
+        external
+        view
+        returns (bytes32);
+
 }

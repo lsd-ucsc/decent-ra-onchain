@@ -88,4 +88,22 @@ contract DecentServerCertMgr {
             bytes32(0);
     }
 
+    /**
+     * Get the platform ID of a Decent Server
+     * @param svrKeyAddr Address derived from the Decent Server public key
+     * @return bytes32 Platform ID of the Decent Server
+     */
+     function getPlatformId(address svrKeyAddr)
+        external
+        view
+        returns (bytes32)
+    {
+        DecentServerCert.DecentServerCertObj storage cert =
+            m_serverCerts[svrKeyAddr];
+
+        require(cert.isVerified, "Server not verified");
+
+        return cert.platformId;
+    }
+
 }
