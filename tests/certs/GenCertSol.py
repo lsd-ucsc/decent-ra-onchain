@@ -9,12 +9,18 @@
 
 
 import base64
+import binascii
 import json
 import os
 
 from typing import Any, List, Tuple
 
-from cryptography.x509 import load_pem_x509_certificate, Certificate, ObjectIdentifier
+from cryptography.x509 import (
+	load_der_x509_certificate,
+	load_pem_x509_certificate,
+	Certificate,
+	ObjectIdentifier
+)
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric.types import CertificatePublicKeyTypes
@@ -534,6 +540,8 @@ outLines.append('    //===== Decent Server Certificate =====')
 outLines.append('')
 with open(DECENT_SVR_PEM_PATH, 'rb') as f:
 	cert = load_pem_x509_certificate(f.read())
+	# der = binascii.unhexlify('')
+	# cert = load_der_x509_certificate(der)
 	outLines += WriteDecentSvrCert(cert, 'DECENT_SVR')
 	serverPubKey = ECPubKey(cert.public_key())
 outLines.append('')
@@ -543,6 +551,8 @@ outLines.append('    //===== Decent App Certificate =====')
 outLines.append('')
 with open(DECENT_APP_PEM_PATH, 'rb') as f:
 	cert = load_pem_x509_certificate(f.read())
+	# der = binascii.unhexlify('')
+	# cert = load_der_x509_certificate(der)
 	outLines += WriteDecentAppCert(cert, 'DECENT_APP', serverPubKey=serverPubKey)
 outLines.append('')
 
