@@ -21,6 +21,17 @@ contract BytesUtils_testSuite {
     function beforeAll() public {
     }
 
+    function testReadUint64() public {
+        BytesUtils_proxy testProxy = new BytesUtils_proxy();
+        try testProxy.testReadUint64() {
+            Assert.ok(true, "readUint64 success");
+        } catch Error(string memory reason) {
+            Assert.ok(false, reason);
+        } catch (bytes memory lowLevelData) {
+            Assert.ok(false, "unexpected error - readUint64");
+        }
+    }
+
     function testSubstringSafe() public {
         BytesUtils_proxy testProxy = new BytesUtils_proxy();
         try testProxy.testSubstringSafe() {

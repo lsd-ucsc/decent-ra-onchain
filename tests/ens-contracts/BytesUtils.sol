@@ -30,6 +30,22 @@ contract BytesUtils_proxy {
         "7234567890ABCDEF"  // 112 bytes
         "8234567890ABCDEF"; // 128 bytes
 
+    function testReadUint64() external {
+        bytes memory b = TEST_INPUT_BYTES_128;
+
+        {
+            uint64 expected = 0x1122334455667788;
+            uint64 actual = BytesUtils.readUint64(b, 0);
+            Assert.equal(actual, expected, "readUint64 mismatch");
+        }
+
+        {
+            uint64 expected = 0x9900AABBCCDDEEFF;
+            uint64 actual = BytesUtils.readUint64(b, 8);
+            Assert.equal(actual, expected, "readUint64 mismatch");
+        }
+    }
+
     function testSubstringSafe() external {
         bytes memory b = TEST_INPUT_BYTES_128;
 
