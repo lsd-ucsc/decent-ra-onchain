@@ -69,6 +69,14 @@ contract DecentServerCertMgr_testSuit {
             TestCerts.DECENT_SVR_CERT_ENCL_HASH,
             "encHash not match"
         );
+
+        bytes32 platId = decentServerCertMgr.getPlatformId(TestCerts.DECENT_SVR_CERT_KEY_ADDR);
+
+        Assert.equal(
+            platId,
+            TestCerts.DECENT_SVR_CERT_PLAT_ID,
+            "platform ID not match"
+        );
     }
 
     function verifyCertTest() public {
@@ -92,6 +100,14 @@ contract DecentServerCertMgr_testSuit {
             encHash,
             TestCerts.DECENT_SVR_CERT_ENCL_HASH,
             "encHash not match"
+        );
+
+        bytes32 platId = decentServerCertMgr.getPlatformId(TestCerts.DECENT_SVR_CERT_KEY_ADDR);
+
+        Assert.equal(
+            platId,
+            TestCerts.DECENT_SVR_CERT_PLAT_ID,
+            "platform ID not match"
         );
     }
 

@@ -21,7 +21,7 @@ contract X509Extension_proxy {
             new X509Extension.ExtEntry[](3);
 
         extEntries[0].extnID = OIDs.OID_DECENT_EXT_VER;
-        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_ID;
+        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_TYPE;
         extEntries[2].extnID = OIDs.OID_DECENT_HASHED_KEYS;
 
         uint256 idx;
@@ -33,7 +33,7 @@ contract X509Extension_proxy {
         Assert.equal(idx, 2, "wrong index");
 
         idx = X509Extension.findIdxOfExtEntry(
-            OIDs.OID_DECENT_PLATFORM_ID,
+            OIDs.OID_DECENT_PLATFORM_TYPE,
             extEntries
         );
         Assert.equal(idx, 1, "wrong index");
@@ -62,7 +62,7 @@ contract X509Extension_proxy {
             new X509Extension.ExtEntry[](3);
 
         extEntries[0].extnID = OIDs.OID_DECENT_EXT_VER;
-        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_ID;
+        extEntries[1].extnID = OIDs.OID_DECENT_PLATFORM_TYPE;
         extEntries[2].extnID = OIDs.OID_NAME_CN;
 
         bytes memory certDer = TestCerts.DECENT_SVR_CERT_DER;

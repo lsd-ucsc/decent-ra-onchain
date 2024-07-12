@@ -141,6 +141,7 @@ contract LibSecp256k1Sha256_proxy {
             certNodes.loadCertNodes(certDer);
 
             address addr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
+            uint8   v = TestCerts.DECENT_SVR_CERT_SIGN_V;
             bytes32 r = TestCerts.DECENT_SVR_CERT_SIGN_R;
             bytes32 s = TestCerts.DECENT_SVR_CERT_SIGN_S;
 
@@ -148,17 +149,23 @@ contract LibSecp256k1Sha256_proxy {
             bytes32 tbsHash = sha256(tbsBytes);
 
             Assert.equal(
-                ecrecover(tbsHash, 28, r, s),
+                tbsHash,
+                TestCerts.DECENT_SVR_CERT_HASH,
+                "[server cert]tbsHash!=DECENT_SVR_CERT_HASH"
+            );
+
+            Assert.equal(
+                ecrecover(tbsHash, v, r, s),
                 addr,
-                "ecrecover()!=addr"
+                "[server cert]ecrecover()!=addr"
             );
             Assert.ok(
                 LibSecp256k1Sha256.verifySignMsg(addr, tbsBytes, r, s),
-                "verifySignMsg!=true"
+                "[server cert]verifySignMsg!=true"
             );
             Assert.ok(
                 LibSecp256k1Sha256.verifySignHash(addr, tbsHash, r, s),
-                "verifySignHash!=true"
+                "[server cert]verifySignHash!=true"
             );
         }
 
@@ -170,6 +177,7 @@ contract LibSecp256k1Sha256_proxy {
             certNodes.loadCertNodes(certDer);
 
             address addr = TestCerts.DECENT_SVR_CERT_KEY_ADDR;
+            uint8   v = TestCerts.DECENT_APP_CERT_SIGN_V;
             bytes32 r = TestCerts.DECENT_APP_CERT_SIGN_R;
             bytes32 s = TestCerts.DECENT_APP_CERT_SIGN_S;
 
@@ -177,17 +185,23 @@ contract LibSecp256k1Sha256_proxy {
             bytes32 tbsHash = sha256(tbsBytes);
 
             Assert.equal(
-                ecrecover(tbsHash, 27, r, s),
+                tbsHash,
+                TestCerts.DECENT_APP_CERT_HASH,
+                "[server cert]tbsHash!=DECENT_APP_CERT_HASH"
+            );
+
+            Assert.equal(
+                ecrecover(tbsHash, v, r, s),
                 addr,
-                "ecrecover()!=addr"
+                "[app cert]ecrecover()!=addr"
             );
             Assert.ok(
                 LibSecp256k1Sha256.verifySignMsg(addr, tbsBytes, r, s),
-                "verifySignMsg!=true"
+                "[app cert]verifySignMsg!=true"
             );
             Assert.ok(
                 LibSecp256k1Sha256.verifySignHash(addr, tbsHash, r, s),
-                "verifySignHash!=true"
+                "[app cert]verifySignHash!=true"
             );
         }
 
